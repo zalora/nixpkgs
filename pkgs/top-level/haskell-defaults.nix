@@ -150,11 +150,12 @@
       jailbreakCabal = super.jailbreakCabal.override { Cabal = self.disableTest self.Cabal_1_14_0; };
       cabal2nix = super.cabal2nix.override { Cabal = self.Cabal_1_16_0_3; hackageDb = self.hackageDb.override { Cabal = self.Cabal_1_16_0_3; }; };
       binary = self.binary_0_6_0_0;
-      cabalInstall_1_16_0_2 = super.cabalInstall_1_16_0_2.override {
-        Cabal = self.Cabal_1_16_0_3; 
+      cabalInstall_1_16_0_2 = (super.cabalInstall_1_16_0_2.extendScope (self : {
         zlib = self.zlib_0_5_3_3;
         mtl = self.mtl_2_1_2;
-        HTTP = self.HTTP_4000_1_1.override { mtl = self.mtl_2_1_2; };
+        HTTP = self.HTTP_4000_1_1;
+      })).override {
+        Cabal = self.Cabal_1_16_0_3;
       };
       quickcheckIo = super.quickcheckIo.override {
         HUnit = self.HUnit_1_2_5_2;
@@ -178,11 +179,12 @@
       jailbreakCabal = super.jailbreakCabal.override { Cabal = self.disableTest self.Cabal_1_14_0; };
       cabal2nix = super.cabal2nix.override { Cabal = self.Cabal_1_16_0_3; hackageDb = self.hackageDb.override { Cabal = self.Cabal_1_16_0_3; }; };
       binary = self.binary_0_6_0_0;
-      cabalInstall_1_16_0_2 = super.cabalInstall_1_16_0_2.override {
-        Cabal = self.Cabal_1_16_0_3;
+      cabalInstall_1_16_0_2 = (super.cabalInstall_1_16_0_2.extendScope (self : {
         zlib = self.zlib_0_5_3_3;
         mtl = self.mtl_2_1_2;
-        HTTP = self.HTTP_4000_1_1.override { mtl = self.mtl_2_1_2; };
+        HTTP = self.HTTP_4000_1_1;
+      })).override {
+        Cabal = self.Cabal_1_16_0_3;
       };
       quickcheckIo = super.quickcheckIo.override {
         HUnit = self.HUnit_1_2_5_2;
@@ -207,11 +209,12 @@
       # deviating from Haskell platform here, to make some packages (notably statistics) compile
       jailbreakCabal = super.jailbreakCabal.override { Cabal = self.disableTest self.Cabal_1_14_0; };
       binary = self.binary_0_6_0_0;
-      cabalInstall_1_16_0_2 = super.cabalInstall_1_16_0_2.override {
-        Cabal = self.Cabal_1_16_0_3;
+      cabalInstall_1_16_0_2 = (super.cabalInstall_1_16_0_2.extendScope (self : {
         zlib = self.zlib_0_5_3_3;
         mtl = self.mtl_2_1_2;
-        HTTP = self.HTTP_4000_1_1.override { mtl = self.mtl_2_1_2; };
+        HTTP = self.HTTP_4000_1_1;
+      })).override {
+        Cabal = self.Cabal_1_16_0_3;
       };
       haskeline = self.haskeline_0_7_1_1;
       terminfo = self.terminfo_0_3_2_6;
@@ -222,22 +225,26 @@
    ({ ghcPath
     , ghcBinary ? ghc6101Binary
     , prefFun
-    , extension ? (self : super : {})
+    , extension ? {}
     , profExplicit ? false, profDefault ? false
     , modifyPrio ? lowPrio
     , extraArgs ? {}
     } :
     let haskellPackagesClass = import ./haskell-packages.nix {
-          inherit pkgs newScope modifyPrio;
+          inherit pkgs;
+
+          # By default the modifyPrio argument is set to lowPrio to make all Haskell packages have
+          # low priority.
+          newScope = scope : x : y : modifyPrio (newScope scope x y);
+
           enableLibraryProfiling =
             if profExplicit then profDefault
                             else config.cabal.libraryProfiling or profDefault;
           ghc = callPackage ghcPath ({ ghc = ghcBinary; } // extraArgs);
         };
-        haskellPackagesPrefsClass = self : let super = haskellPackagesClass self; in super // prefFun self super;
-        haskellPackagesExtensionClass = self : let super = haskellPackagesPrefsClass self; in super // extension self super;
-        haskellPackages = haskellPackagesExtensionClass haskellPackages;
-    in haskellPackages);
+        haskellPackagesPrefsClass = pkgs.lib.oop.extend haskellPackagesClass prefFun;
+        haskellPackagesExtensionClass = pkgs.lib.oop.extend haskellPackagesPrefsClass extension;
+    in pkgs.lib.oop.new haskellPackagesExtensionClass);
 
   defaultVersionPrioFun =
     profDefault :

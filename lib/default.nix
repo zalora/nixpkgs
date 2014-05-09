@@ -13,6 +13,7 @@ let
   debug = import ./debug.nix;
   misc = import ./misc.nix;
   maintainers = import ./maintainers.nix;
+  oop = import ./oop.nix;
   platforms = import ./platforms.nix;
   systems = import ./systems.nix;
   customisation = import ./customisation.nix;
@@ -20,7 +21,7 @@ let
 
 in
   { inherit trivial lists strings stringsWithDeps attrsets sources options
-      modules types meta debug maintainers licenses platforms systems;
+      modules types meta debug maintainers oop licenses platforms systems;
   }
   # !!! don't include everything at top-level; perhaps only the most
   # commonly used functions.

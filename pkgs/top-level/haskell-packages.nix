@@ -36,12 +36,6 @@
 #       enabled, its dependencies should have profiling enabled as well.
 #       Therefore, this is implemented as a global flag.
 #
-#    modifyPrio:
-#       Either the identity function or lowPrio is intended to be passed
-#       here. The idea is that we can make a complete set of Haskell packages
-#       have low priority from the outside.
-#
-#
 # Policy for keeping multiple versions:
 #
 # We keep multiple versions for
@@ -58,7 +52,7 @@
 #
 # For most packages, however, we keep only one version, and use default.nix.
 
-{ pkgs, newScope, ghc, modifyPrio ? (x : x)
+{ pkgs, newScope, ghc
 , enableLibraryProfiling ? false
 , enableSharedLibraries ? pkgs.stdenv.lib.versionOlder "7.7" ghc.version
 , enableSharedExecutables ? pkgs.stdenv.lib.versionOlder "7.7" ghc.version
@@ -66,17 +60,19 @@
 , enableStaticLibraries ? true
 }:
 
-# We redefine callPackage to take into account the new scope. The optional
-# modifyPrio argument can be set to lowPrio to make all Haskell packages have
-# low priority.
+# We redefine callPackage to take into account the new scope.
 
-self : let callPackage = x : y : modifyPrio (newScope self x y); in
+self :
+  let callPackageWithScope = scope : x : y : newScope scope x y //
+        { extendScope = ext : callPackageWithScope (pkgs.lib.oop.newExtend self.nixClass (s : ext s)) x y; };
+      callPackage = callPackageWithScope self;
+      overrideScope = x : scope : (callPackage x {}).extendScope scope; in
 
 # Indentation deliberately broken at this point to keep the bulk
 # of this file at a low indentation level.
 
 {
-  inherit callPackage;
+  inherit callPackage overrideScope;
 
   # GHC and its wrapper
   #
@@ -1039,13 +1035,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   elerea = callPackage ../development/libraries/haskell/elerea {};
 
-  Elm = callPackage ../development/compilers/elm/elm.nix {
+  Elm = overrideScope ../development/compilers/elm/elm.nix (self : {
     binary = self.binary_0_7_1_0;
-    pandoc = self.pandoc.override {
-      binary = self.binary_0_7_1_0;
-      zipArchive = self.zipArchive.override { binary = self.binary_0_7_1_0; };
-    };
-  };
+  });
 
   elmServer = callPackage ../development/compilers/elm/elm-server.nix {};
 
@@ -1942,10 +1934,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   OpenGL_2_4_0_2 = callPackage ../development/libraries/haskell/OpenGL/2.4.0.2.nix {};
   OpenGL_2_6_0_1 = callPackage ../development/libraries/haskell/OpenGL/2.6.0.1.nix {};
   OpenGL_2_8_0_0 = callPackage ../development/libraries/haskell/OpenGL/2.8.0.0.nix {};
-  OpenGL_2_9_1_0 = callPackage ../development/libraries/haskell/OpenGL/2.9.1.0.nix {
+  OpenGL_2_9_1_0 = overrideScope ../development/libraries/haskell/OpenGL/2.9.1.0.nix (self : {
     OpenGLRaw = self.OpenGLRaw_1_4_0_0;
-    GLURaw = self.GLURaw_1_4_0_0.override { OpenGLRaw = self.OpenGLRaw_1_4_0_0; };
-  };
+  });
   OpenGL = self.OpenGL_2_9_1_0;
 
   OpenGLRaw_1_3_0_0 = callPackage ../development/libraries/haskell/OpenGLRaw/1.3.0.0.nix {};
@@ -2351,10 +2342,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   StateVar = callPackage ../development/libraries/haskell/StateVar {};
 
-  statistics = callPackage ../development/libraries/haskell/statistics {
+  statistics = overrideScope ../development/libraries/haskell/statistics (self : {
     binary = self.binary_0_7_1_0;
-    vectorBinaryInstances = self.vectorBinaryInstances.override { binary = self.binary_0_7_1_0; };
-  };
+  });
 
   statvfs = callPackage ../development/libraries/haskell/statvfs {};
 
@@ -2808,13 +2798,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   word8 = callPackage ../development/libraries/haskell/word8 {};
 
-  wreq = callPackage ../development/libraries/haskell/wreq {
-    aeson = self.aeson.override { attoparsec = self.attoparsec_0_11_3_0; };
+  wreq = overrideScope ../development/libraries/haskell/wreq (self : {
     attoparsec = self.attoparsec_0_11_3_0;
-    lens = self.lens.override {
-      aeson = self.aeson.override { attoparsec = self.attoparsec_0_11_3_0; };
-    };
-  };
+  });
 
   wx = callPackage ../development/libraries/haskell/wxHaskell/wx.nix {};
 
@@ -3148,10 +3134,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   # Games.
 
-  LambdaHack = callPackage ../games/LambdaHack {
+  LambdaHack = overrideScope ../games/LambdaHack (self : {
     binary = self.binary_0_7_1_0;
-    vectorBinaryInstances = self.vectorBinaryInstances.override { binary = self.binary_0_7_1_0; };
-  };
+  });
 
   MazesOfMonad = callPackage ../games/MazesOfMonad {};
 
