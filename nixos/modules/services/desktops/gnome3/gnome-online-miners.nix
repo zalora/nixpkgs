@@ -1,8 +1,8 @@
 # GNOME Online Miners daemon.
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
-with pkgs.lib;
+with lib;
 
 {
 
