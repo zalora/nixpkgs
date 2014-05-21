@@ -56,8 +56,13 @@ rec {
 
               internal = true;
 
+              default = {};
+
               # !!! The with {}; hack is to avoid parse errors if evaluated with old nix
-              default = if builtins ? importWithSettings then with {}; __curSettings else {};
+              apply = settings: (if builtins ? importWithSettings
+                then with {}; __curSettings
+                else {}
+              ) // settings;
             };
 
             libPath = mkOption {
