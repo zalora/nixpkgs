@@ -946,10 +946,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
     libc = pkgs.stdenv.gcc.libc;
   };
 
-  gtkglext = callPackage ../development/libraries/haskell/gtkglext {};
+  gtkglext = callPackage ../development/libraries/haskell/gtkglext { gtkglext = pkgs.gnome2.gtkglext; };
 
   gtk2hsBuildtools = callPackage ../development/libraries/haskell/gtk2hs-buildtools {};
-  gtk2hsC2hs = self.gtk2hsBuildtools;
 
   gtksourceview2 = callPackage ../development/libraries/haskell/gtksourceview2 {
     inherit (pkgs.gnome) gtksourceview;
