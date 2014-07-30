@@ -33,7 +33,7 @@ with lib;
           ''
             ip route del blackhole 169.254.169.254/32 || true
 
-            wget="wget --retry-connrefused -O -"
+            wget="wget -q --retry-connrefused -O -"
 
             echo "setting host name..."
             ${optionalString (config.networking.hostName == "") ''
