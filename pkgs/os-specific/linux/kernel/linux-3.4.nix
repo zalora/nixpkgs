@@ -1,12 +1,12 @@
 { stdenv, fetchurl, ... } @ args:
 
 import ./generic.nix (args // rec {
-  version = "3.4.95";
+  version = "3.4.100";
   extraMeta.branch = "3.4";
 
   src = fetchurl {
     url = "mirror://kernel/linux/kernel/v3.x/linux-${version}.tar.xz";
-    sha256 = "1rv2jsfc2m12nk293v12rvvqnicyh73pwp6bcb28jdqdhm95k6l6";
+    sha256 = "170q4ay8kxf45b3932fpms37w4fh9h7pdiwc5wr64drg5j356pds";
   };
 
   kernelPatches = args.kernelPatches ++
