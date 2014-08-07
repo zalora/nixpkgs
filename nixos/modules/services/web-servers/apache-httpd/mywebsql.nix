@@ -61,7 +61,7 @@ let
       ''
         <?php
         define('DEFAULT_EDITOR', '${config.editor}');
-        define('DEFAULT_LANGUAGE', '${config.langauge}');
+        define('DEFAULT_LANGUAGE', '${config.language}');
         define('DEFAULT_THEME', '${config.theme}');
         define('HOTKEYS_ENABLED', ${if config.hotkeys then "TRUE" else "FALSE"});
         define('LOG_MESSAGES', ${if config.logMessages then "TRUE" else "FALSE"});
@@ -237,14 +237,14 @@ in
       '';
     };
 
-    langauge = mkOption {
+    language = mkOption {
       type = types.enum [ "af" "bg" "ca" "cs" "da" "de"
         "el" "en" "es" "et" "fi" "fr" "gl" "he" "hr" "hu"
         "id" "it" "ja" "ko" "lt" "lv" "ms" "nl" "no" "pl" "pt"
         "ro" "ru" "sk" "sl" "sq" "sr" "sv" "th" "tr" "uk" "zh" ];
       default = "en";
       description = ''
-        Default langauge
+        Default language
       '';
     };
 
