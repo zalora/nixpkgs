@@ -23,11 +23,16 @@ cabal.mkDerivation (self: {
     unorderedContainers vector vectorBinaryInstances zlib
   ];
   doCheck = false;
+  patchPhase = ''
+    sed -i -e 's|gtk >=.*|gtk|' LambdaHack.cabal
+  '';
   meta = {
     homepage = "http://github.com/LambdaHack/LambdaHack";
     description = "A roguelike game engine in early development";
     license = self.stdenv.lib.licenses.bsd3;
     platforms = self.ghc.meta.platforms;
+    hydraPlatforms = self.stdenv.lib.platforms.none;
     maintainers = [ self.stdenv.lib.maintainers.andres ];
+    broken = true;
   };
 })

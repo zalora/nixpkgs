@@ -135,6 +135,7 @@
   ./services/logging/logstash.nix
   ./services/logging/rsyslogd.nix
   ./services/logging/syslogd.nix
+  ./services/logging/syslog-ng.nix
   ./services/mail/dovecot.nix
   ./services/mail/freepops.nix
   ./services/mail/mail.nix
@@ -233,6 +234,7 @@
   ./services/networking/teamspeak3.nix
   ./services/networking/tftpd.nix
   ./services/networking/unbound.nix
+  ./services/networking/unifi.nix
   ./services/networking/vsftpd.nix
   ./services/networking/wakeonlan.nix
   ./services/networking/websockify.nix
