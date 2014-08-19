@@ -11108,6 +11108,8 @@ let
 
   nixops = callPackage ../tools/package-management/nixops { };
 
+  nixopsModular = callPackage ../tools/package-management/nixops-modular { };
+
   nix-prefetch-scripts = callPackage ../tools/package-management/nix-prefetch-scripts { };
 
   nix-repl = callPackage ../tools/package-management/nix-repl { };
