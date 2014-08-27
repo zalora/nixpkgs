@@ -139,8 +139,8 @@ rec {
 
   pygtk = import ../development/python-modules/pygtk {
     inherit (pkgs) fetchurl stdenv pkgconfig gtk;
-    inherit python buildPythonPackage pygobject pycairo;
-  };
+    inherit python buildPythonPackage pygobject pycairo isPy3k;
+  }; 
 
   # XXX: how can we get an override here?
   #pyGtkGlade = pygtk.override {
@@ -149,7 +149,7 @@ rec {
   pyGtkGlade = import ../development/python-modules/pygtk {
     inherit (pkgs) fetchurl stdenv pkgconfig gtk;
     inherit (pkgs.gnome) libglade;
-    inherit python buildPythonPackage pygobject pycairo;
+    inherit python buildPythonPackage pygobject pycairo isPy3k;
   };
 
   pyqt4 = import ../development/python-modules/pyqt/4.x.nix {
@@ -278,15 +278,15 @@ rec {
 
 
   alembic = buildPythonPackage rec {
-    name = "alembic-0.6.0";
+    name = "alembic-0.6.6";
 
     src = fetchurl {
       url = "https://pypi.python.org/packages/source/a/alembic/${name}.tar.gz";
-      md5 = "084fe81b48ebae43b0f6031af68a03d6";
+      md5 = "71e4a8f6849e1527abfc4ea33d51f37c";
     };
 
-    buildInputs = [ nose ];
-    propagatedBuildInputs = [ Mako sqlalchemy ];
+    buildInputs = [ nose mock ];
+    propagatedBuildInputs = [ Mako sqlalchemy9 ];
 
     meta = {
       homepage = http://bitbucket.org/zzzeek/alembic;
@@ -384,11 +384,12 @@ rec {
 
 
   anyjson = buildPythonPackage rec {
-    name = "anyjson-0.3.1";
+    name = "anyjson-0.3.3";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/a/anyjson/${name}.tar.gz";
-      md5 = "2b53b5d53fc40af4da7268d3c3e35a50";
+      md5 = "2ea28d6ec311aeeebaf993cb3008b27c";
     };
 
     buildInputs = [ pythonPackages.nose ];
@@ -614,6 +615,7 @@ rec {
 
   beautifulsoup = buildPythonPackage (rec {
     name = "beautifulsoup-3.2.1";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://www.crummy.com/software/BeautifulSoup/download/3.x/BeautifulSoup-3.2.1.tar.gz";
@@ -1127,6 +1129,7 @@ rec {
   cheetah = buildPythonPackage rec {
     version = "2.4.4";
     name = "cheetah-${version}";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/C/Cheetah/Cheetah-${version}.tar.gz";
@@ -1309,7 +1312,7 @@ rec {
     };
 
     buildInputs = [ unittest2 ];
-    propagatedBuildInputs = [ colander sqlalchemy8 ];
+    propagatedBuildInputs = [ colander sqlalchemy9 ];
 
     # string: argument name cannot be overridden via info kwarg.
     doCheck = false;
@@ -2187,18 +2190,33 @@ rec {
 
   gtimelog = buildPythonPackage rec {
     name = "gtimelog-${version}";
-    version = "0.8.1";
+    version = "0.9.1";
+    
+    disabled = isPy26;
 
     src = fetchurl {
       url = "https://github.com/gtimelog/gtimelog/archive/${version}.tar.gz";
-      sha256 = "0nwpfv284b26q97mfpagqkqb4n2ilw46cx777qsyi3plnywk1xa0";
+      sha256 = "0qk8fv8cszzqpdi3wl9vvkym1jil502ycn6sic4jrxckw5s9jsfj";
     };
+    
+    preBuild = ''
+      export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
+      export LC_ALL="en_US.UTF-8"
+    '';
 
-    propagatedBuildInputs = [ pygtk ];
+    # TODO: AppIndicator
+    propagatedBuildInputs = [ pkgs.gobjectIntrospection pygobject3 pkgs.makeWrapper pkgs.gtk3 ];
 
     checkPhase = ''
-      patchShebangs ./runtests
+      substituteInPlace runtests --replace "/usr/bin/env python" "${python}/bin/${python.executable}"
       ./runtests
+    '';
+    
+    preFixup = ''
+        wrapProgram $out/bin/gtimelog \
+          --prefix GI_TYPELIB_PATH : "$GI_TYPELIB_PATH" \
+          --prefix LD_LIBRARY_PATH ":" "${pkgs.gtk3}/lib" \
+     
     '';
 
     meta = with stdenv.lib; {
@@ -3054,14 +3072,15 @@ rec {
 
 
   django_evolution = buildPythonPackage rec {
-    name = "django_evolution-0.6.9";
+    name = "django_evolution-0.7.3";
+    disabled = isPy3k;
 
     src = fetchurl {
-      url = "http://pypi.python.org/packages/source/d/django_evolution/${name}.tar.gz";
-      md5 = "c0d7d10bc41898c88b14d434c48766ff";
+      url = "http://downloads.reviewboard.org/releases/django-evolution/0.7/${name}.tar.gz";
+      md5 = "c51895b6501dd58b0e5dc8f5a5fb6f68";
     };
 
-    propagatedBuildInputs = [ django_1_3 ];
+    propagatedBuildInputs = [ django_1_5 ];
 
     meta = {
       description = "A database schema evolution tool for the Django web framework";
@@ -3360,6 +3379,7 @@ rec {
 
   flexget = buildPythonPackage rec {
     name = "FlexGet-1.2.161";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "https://pypi.python.org/packages/source/F/FlexGet/${name}.tar.gz";
@@ -3479,11 +3499,11 @@ rec {
   });
 
   fs = buildPythonPackage rec {
-    name = "fs-0.4.0";
+    name = "fs-0.5.0";
 
     src = fetchurl {
-      url    = "https://pyfilesystem.googlecode.com/files/fs-0.4.0.tar.gz";
-      sha256 = "1fk7ilwd01qgj4anw9k1vjp0amxswzzxbp6bk4nncp7210cxp3vz";
+      url    = "https://pypi.python.org/packages/source/f/fs/${name}.tar.gz";
+      sha256 = "144f4yn2nvnxh2vrnmiabpwx3s637np0d1j1w95zym790d66shir";
     };
 
     meta = with stdenv.lib; {
@@ -3924,11 +3944,11 @@ rec {
   };
 
   httplib2 = buildPythonPackage rec {
-    name = "httplib2-0.9";
+    name = "httplib2-0.8";
 
     src = fetchurl {
       url = "https://pypi.python.org/packages/source/h/httplib2/${name}.tar.gz";
-      sha256 = "1asi5wpncnc6ki3bz33mhb9xh2lrkb24y4qng8bmqnczdmm8rsir";
+      sha256 = "174w6rz4na1sdlfz37h95l0pkfm9igf9nqmhbd8aqh3sm7d9zrff";
     };
 
     meta = {
@@ -4017,10 +4037,12 @@ rec {
   };
 
 
-  ipaddr = buildPythonPackage {
+  ipaddr = buildPythonPackage rec {
     name = "ipaddr-2.1.10";
+    disabled = isPy3k;
+
     src = fetchurl {
-      url = "http://ipaddr-py.googlecode.com/files/ipaddr-2.1.10.tar.gz";
+      url = "http://pypi.python.org/packages/source/i/ipaddr/${name}.tar.gz";
       sha256 = "18ycwkfk3ypb1yd09wg20r7j7zq2a73d7j6j10qpgra7a7abzhyj";
     };
 
@@ -4461,6 +4483,7 @@ rec {
 
   mechanize = buildPythonPackage (rec {
     name = "mechanize-0.1.11";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://wwwsearch.sourceforge.net/mechanize/src/${name}.tar.gz";
@@ -4700,11 +4723,11 @@ rec {
 
 
   munkres = buildPythonPackage rec {
-    name = "munkres-1.0.5.4";
+    name = "munkres-1.0.6";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/m/munkres/${name}.tar.gz";
-      md5 = "cb9d114fb523428bab4742e88bc83696";
+      md5 = "d7ba3b8c5001578ae229a2d5a655872f";
     };
 
     # error: invalid command 'test'
@@ -4726,6 +4749,11 @@ rec {
       url = "http://pypi.python.org/packages/source/m/musicbrainzngs/${name}.tar.gz";
       md5 = "9e17a181af72d04a291c9a960bc73d44";
     };
+    
+    preCheck = ''
+      export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
+      export LC_ALL="en_US.UTF-8"
+    '';
 
     meta = {
       homepage = http://alastair/python-musicbrainz-ngs;
@@ -4902,6 +4930,7 @@ rec {
   netlib = buildPythonPackage rec {
     baseName = "netlib";
     name = "${baseName}-${meta.version}";
+    disabled = (!isPy27);
 
     src = fetchurl {
       url = "https://github.com/cortesi/netlib/archive/v${meta.version}.tar.gz";
@@ -5211,6 +5240,7 @@ rec {
 
   oauth2 = buildPythonPackage (rec {
     name = "oauth2-1.5.211";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/o/oauth2/oauth2-1.5.211.tar.gz";
@@ -5417,6 +5447,7 @@ rec {
 
   paste = buildPythonPackage rec {
     name = "paste-1.7.5.1";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = http://pypi.python.org/packages/source/P/Paste/Paste-1.7.5.1.tar.gz;
@@ -5435,12 +5466,12 @@ rec {
 
 
   paste_deploy = buildPythonPackage rec {
-    version = "1.5.0";
+    version = "1.5.2";
     name = "paste-deploy-${version}";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/P/PasteDeploy/PasteDeploy-${version}.tar.gz";
-      md5 = "f1a068a0b680493b6eaff3dd7690690f";
+      md5 = "352b7205c78c8de4987578d19431af3b";
     };
 
     buildInputs = [ nose ];
@@ -5576,6 +5607,7 @@ rec {
 
   pika = buildPythonPackage {
     name = "pika-0.9.12";
+    diabled = isPy3k;
     src = fetchurl {
       url = https://pypi.python.org/packages/source/p/pika/pika-0.9.12.tar.gz;
       md5 = "7174fc7cc5570314fa3cfaa729106482";
@@ -6002,20 +6034,21 @@ rec {
 
 
   pycurl = buildPythonPackage (rec {
-    name = "pycurl-7.19.0";
+    name = "pycurl-7.19.5";
 
     src = fetchurl {
       url = "http://pycurl.sourceforge.net/download/${name}.tar.gz";
-      sha256 = "0hh6icdbp7svcq0p57zf520ifzhn7jw64x07k99j7h57qpy2sy7b";
+      sha256 = "0hqsap82zklhi5fxhc69kxrwzb0g9566f7sdpz7f9gyxkmyam839";
     };
 
-    buildInputs = [ pkgs.curl ];
+    propagatedBuildInputs = [ pkgs.curl pkgs.openssl ];
 
     # error: invalid command 'test'
     doCheck = false;
 
     preConfigure = ''
       substituteInPlace setup.py --replace '--static-libs' '--libs'
+      export PYCURL_SSL_LIBRARY=openssl
     '';
 
     meta = {
@@ -6433,6 +6466,7 @@ rec {
 
   ldap = buildPythonPackage rec {
     name = "ldap-2.4.15";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/p/python-ldap/python-${name}.tar.gz";
@@ -6832,11 +6866,11 @@ rec {
   reportlab =
    let freetype = overrideDerivation pkgs.freetype (args: { configureFlags = "--enable-static --enable-shared"; });
    in buildPythonPackage rec {
-    name = "reportlab-2.5";
+    name = "reportlab-3.1.8";
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/r/reportlab/${name}.tar.gz";
-      md5 = "cdf8b87a6cf1501de1b0a8d341a217d3";
+      md5 = "820a9fda647078503597b85cdba7ed7f";
     };
 
     buildInputs = [freetype];
@@ -7015,6 +7049,7 @@ rec {
   robotframework = buildPythonPackage rec {
     version = "2.8.5";
     name = "robotframework-${version}";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "https://pypi.python.org/packages/source/r/robotframework/${name}.tar.gz";
@@ -7113,6 +7148,8 @@ rec {
   rope = buildPythonPackage rec {
     version = "0.9.4";
     name = "rope-${version}";
+    
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://pypi.python.org/packages/source/r/rope/${name}.tar.gz";
@@ -7506,6 +7543,7 @@ rec {
 
   pydns = buildPythonPackage rec {
     name = "pydns-2.3.6";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "https://pypi.python.org/packages/source/p/pydns/${name}.tar.gz";
@@ -7514,8 +7552,6 @@ rec {
 
     doCheck = false;
 
-    meta = with stdenv.lib; {
-    };
   };
 
   sympy = buildPythonPackage rec {
@@ -8377,7 +8413,8 @@ rec {
   twisted = buildPythonPackage rec {
     # NOTE: When updating please check if new versions still cause issues
     # to packages like carbon (http://stackoverflow.com/questions/19894708/cant-start-carbon-12-04-python-error-importerror-cannot-import-name-daem)
-
+    disabled = isPy3k;
+ 
     name = "Twisted-11.1.0";
     src = fetchurl {
       url = "https://pypi.python.org/packages/source/T/Twisted/${name}.tar.bz2";
@@ -8455,6 +8492,7 @@ rec {
 
   urlgrabber =  buildPythonPackage rec {
     name = "urlgrabber-3.9.1";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://urlgrabber.baseurl.org/download/${name}.tar.gz";
@@ -9031,6 +9069,8 @@ rec {
   
   BTrees = pythonPackages.buildPythonPackage rec {
     name = "BTrees-4.0.8";
+    
+    patches = [ ./../development/python-modules/btrees_interger_overflow.patch ];
 
     propagatedBuildInputs = [ persistent zope_interface transaction ];
 
@@ -9583,6 +9623,7 @@ rec {
   libarchive = buildPythonPackage rec {
     version = "3.1.2-1";
     name = "libarchive-${version}";
+    disabled = isPy3k;
 
     src = fetchurl {
       url = "http://python-libarchive.googlecode.com/files/python-libarchive-${version}.tar.gz";

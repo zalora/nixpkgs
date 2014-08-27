@@ -1,5 +1,5 @@
 { stdenv, fetchurl, zlib ? null, zlibSupport ? true, bzip2, pkgconfig, libffi
-, sqlite, openssl, ncurses, pythonFull, expat, tcl, tk }:
+, sqlite, openssl, ncurses, pythonFull, expat, tcl, tk, x11, libX11 }:
 
 assert zlibSupport -> zlib != null;
 
@@ -20,7 +20,7 @@ let
       sha256 = "0fg4l48c7n59n5j3b1dgcsr927xzylkfny4a6pnk6z0pq2bhvl9z";
     };
 
-    buildInputs = [ bzip2 openssl pkgconfig pythonFull libffi ncurses expat sqlite tk tcl ]
+    buildInputs = [ bzip2 openssl pkgconfig pythonFull libffi ncurses expat sqlite tk tcl x11 libX11 ]
       ++ stdenv.lib.optional (stdenv ? gcc && stdenv.gcc.libc != null) stdenv.gcc.libc
       ++ stdenv.lib.optional zlibSupport zlib;
 
@@ -40,12 +40,20 @@ let
       substituteInPlace pypy/goal/targetpypystandalone.py \
         --replace "/usr/bin/env pypy" "${pythonFull}/bin/python"
 
-      # convince pypy to find nix ncurses
+      # hint pypy to find nix ncurses
       substituteInPlace pypy/module/_minimal_curses/fficurses.py \
         --replace "/usr/include/ncurses/curses.h" "${ncurses}/include/curses.h" \
         --replace "ncurses/curses.h" "${ncurses}/include/curses.h" \
         --replace "ncurses/term.h" "${ncurses}/include/term.h" \
         --replace "libraries=['curses']" "libraries=['ncurses']"
+
+      # tkinter hints
+      substituteInPlace lib_pypy/_tkinter/tklib.py \
+        --replace "'/usr/include/tcl'" "'${tk}/include', '${tcl}/include'" \
+        --replace "linklibs=['tcl', 'tk']" "linklibs=['tcl8.5', 'tk8.5']" \
+        --replace "libdirs = []" "libdirs = ['${tk}/lib', '${tcl}/lib']"
+
+      sed -i "s@libraries=\['sqlite3'\]\$@libraries=['sqlite3'], include_dirs=['${sqlite}/include'], library_dirs=['${sqlite}/lib']@" lib_pypy/_sqlite3.py
     '';
 
     setupHook = ./setup-hook.sh;

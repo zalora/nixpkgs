@@ -1510,6 +1510,8 @@ let
 
   megatools = callPackage ../tools/networking/megatools { };
 
+  mfcuk = callPackage ../tools/security/mfcuk { };
+
   minecraft = callPackage ../games/minecraft { };
 
   minecraft-server = callPackage ../games/minecraft-server { };
@@ -5312,6 +5314,8 @@ let
 
   libnatspec = callPackage ../development/libraries/libnatspec { };
 
+  libnfc = callPackage ../development/libraries/libnfc { };
+
   libnfsidmap = callPackage ../development/libraries/libnfsidmap { };
 
   libnice = callPackage ../development/libraries/libnice { };
@@ -5447,6 +5451,8 @@ let
   libnetfilter_queue = callPackage ../development/libraries/libnetfilter_queue { };
 
   libnfnetlink = callPackage ../development/libraries/libnfnetlink { };
+
+  libnftnl = callPackage ../development/libraries/libnftnl { };
 
   libnih = callPackage ../development/libraries/libnih { };
 
@@ -5943,8 +5949,6 @@ let
   };
 
   pdf2xml = callPackage ../development/libraries/pdf2xml {} ;
-
-  pdf2htmlex = callPackage ../development/libraries/pdf2htmlex {} ;
 
   phonon = callPackage ../development/libraries/phonon { };
 
@@ -7681,6 +7685,8 @@ let
     libpng = libpng15;
   };
 
+  nftables = callPackage ../os-specific/linux/nftables { };
+
   numactl = callPackage ../os-specific/linux/numactl { };
 
   gocode = callPackage ../development/tools/gocode { };
@@ -8394,7 +8400,7 @@ let
 
   d4x = callPackage ../applications/misc/d4x { };
 
-  darcs = with haskellPackages_ghc763; callPackage ../applications/version-management/darcs {
+  darcs = with haskellPackages_ghc783; callPackage ../applications/version-management/darcs {
     cabal = cabal.override {
       extension = self : super : {
         isLibrary = false;
@@ -9384,7 +9390,9 @@ let
     rake         = rake;
   };
 
-  synfigstudio = callPackage ../applications/graphics/synfigstudio { };
+  synfigstudio = callPackage ../applications/graphics/synfigstudio {
+    fontsConf = makeFontsConf { fontDirectories = [ freefont_ttf ]; };
+  };
 
   sxhkd = callPackage ../applications/window-managers/sxhkd { };
 
