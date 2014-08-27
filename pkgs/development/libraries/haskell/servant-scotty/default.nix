@@ -6,8 +6,8 @@
 
 cabal.mkDerivation (self: {
   pname = "servant-scotty";
-  version = "0.1";
-  sha256 = "0nl4ghx4hp1329sgnphirnnikxyn5hgw0iz5dga5ib16bmkzbsvi";
+  version = "0.1.1";
+  sha256 = "0d3yc7aa2p1izizqnj81iscj9hbgbkpyav1ncmxzkr48svr6h783";
   buildDepends = [
     aeson httpTypes scotty servant servantResponse text transformers
   ];
