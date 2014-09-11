@@ -867,6 +867,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   fuzzcheck = callPackage ../development/libraries/haskell/fuzzcheck {};
 
+  functorInfix = callPackage ../development/libraries/haskell/functor-infix {};
+
   gamma = callPackage ../development/libraries/haskell/gamma {};
 
   geniplate = callPackage ../development/libraries/haskell/geniplate {};
