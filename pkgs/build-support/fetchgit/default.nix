@@ -45,6 +45,9 @@ stdenv.mkDerivation {
     # derivation like fetchurl is allowed to do so since its result is
     # by definition pure.
     "http_proxy" "https_proxy" "ftp_proxy" "all_proxy" "no_proxy"
+
+    # Same for using ssh-agent:
+    "SSH_AUTH_SOCK"
     ];
 
   preferLocalBuild = true;
