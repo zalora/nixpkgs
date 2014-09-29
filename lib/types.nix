@@ -35,9 +35,14 @@ in rec {
     , # Return a flat list of sub-options.  Used to generate
       # documentation.
       getSubOptions ? prefix: {}
+    , # List of modules if any, or null if none.
+      getSubModules ? null
+    , # Function for building the same option type  with a different list of
+      # modules.
+      substSubModules ? m: null
     }:
     { _type = "option-type";
-      inherit name check merge getSubOptions;
+      inherit name check merge getSubOptions getSubModules substSubModules;
     };
 
 
@@ -115,6 +120,8 @@ in rec {
             ) defsFinal mergedValue;
           in if defsFinal == [] then {} else { value = mergedValue; }) def.value) defs)));
       getSubOptions = prefix: elemType.getSubOptions (prefix ++ ["*"]);
+      getSubModules = elemType.getSubModules;
+      substSubModules = m: listOf (elemType.substSubModules m);
     };
 
     attrsOf = elemType: mkOptionType {
@@ -130,6 +137,8 @@ in rec {
           (map (def: listToAttrs (mapAttrsToList (n: def':
             { name = n; value = { inherit (def) file; value = def'; }; }) def.value)) defs)));
       getSubOptions = prefix: elemType.getSubOptions (prefix ++ ["<name>"]);
+      getSubModules = elemType.getSubModules;
+      substSubModules = m: attrsOf (elemType.substSubModules m);
     };
 
     # List or attribute set of ...
@@ -153,12 +162,16 @@ in rec {
         check = x: isList x || isAttrs x;
         merge = loc: defs: attrOnly.merge loc (imap convertIfList defs);
         getSubOptions = prefix: elemType.getSubOptions (prefix ++ ["<name?>"]);
+        getSubModules = elemType.getSubModules;
+        substSubModules = m: loaOf (elemType.substSubModules m);
       };
 
     uniq = elemType: mkOptionType {
       inherit (elemType) name check;
       merge = mergeOneOption;
       getSubOptions = elemType.getSubOptions;
+      getSubModules = elemType.getSubModules;
+      substSubModules = m: uniq (elemType.substSubModules m);
     };
 
     nullOr = elemType: mkOptionType {
@@ -170,21 +183,6 @@ in rec {
         else if nrNulls != 0 then
           throw "The option `${showOption loc}' is defined both null and not null, in ${showFiles (getFiles defs)}."
         else elemType.merge loc defs;
-      getSubOptions = elemType.getSubOptions;
-    };
-
-    functionTo = elemType: mkOptionType {
-      name = "function that evaluates to a(n) ${elemType.name}";
-      check = isFunction;
-      merge = loc: defs:
-        fnArgs: let
-          inherit (mergeDefinitions loc elemType
-            (map (fn: { inherit (fn) file; value = fn.value fnArgs; }) defs)
-          ) defsFinal mergedValue;
-        in if defsFinal == [] then
-          throw "The option `${showOption loc}' is defined as a function that doesn't return any value (using mkIf or mkMerge), in ${showFiles (getFiles defs)}"
-        else
-          mergedValue;
       getSubOptions = elemType.getSubOptions;
     };
 
@@ -210,6 +208,8 @@ in rec {
           { modules = opts'; inherit prefix;
             # FIXME: hack to get shit to evaluate.
             args = { name = ""; }; }).options;
+        getSubModules = opts';
+        substSubModules = m: submodule m;
       };
 
     enum = values: mkOptionType {
