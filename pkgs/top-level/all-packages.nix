@@ -283,6 +283,11 @@ let
     vs = vs90wrapper;
   };
 
+  fetchadc = import ../build-support/fetchadc {
+    inherit curl stdenv;
+    inherit (config) adc_user adc_pass;
+  };
+
   fetchbower = import ../build-support/fetchbower {
     inherit stdenv git;
     inherit (nodePackages) fetch-bower;
@@ -2364,6 +2369,8 @@ let
 
   tpm-tools = callPackage ../tools/security/tpm-tools { };
 
+  traceroute = callPackage ../tools/networking/traceroute { };
+
   trickle = callPackage ../tools/networking/trickle {};
 
   trousers = callPackage ../tools/security/trousers { };
@@ -3774,17 +3781,14 @@ let
 
   luaPackages = lua52Packages;
 
-  lua5_1_sockets = lua51Packages.sockets;
+  lua5_1_sockets = lua51Packages.luasocket;
 
   lua5_expat = callPackage ../development/interpreters/lua-5/expat.nix {};
-  lua51_zip = callPackage ../development/interpreters/lua-5/zip.nix { };
   lua5_sec = callPackage ../development/interpreters/lua-5/sec.nix { };
 
-  luarocks = callPackage ../development/tools/misc/luarocks {
-     lua = lua5;
-  };
-
   luajit = callPackage ../development/interpreters/luajit {};
+
+  luarocks = luaPackages.luarocks;
 
   ### END OF LUA
 
@@ -4041,6 +4045,7 @@ let
   guile-xcb = callPackage ../development/guile-modules/guile-xcb { };
 
   pharo-vm = callPackage_i686 ../development/pharo/vm { };
+  pharo-launcher = callPackage ../development/pharo/launcher { };
 
   srecord = callPackage ../development/tools/misc/srecord { };
 
@@ -5485,6 +5490,8 @@ let
   libserialport = callPackage ../development/libraries/libserialport { };
 
   libgtop = callPackage ../development/libraries/libgtop {};
+
+  libLAS = callPackage ../development/libraries/libLAS { };
 
   liblo = callPackage ../development/libraries/liblo { };
 
@@ -7086,6 +7093,10 @@ let
     sslSupport = true;
   });
 
+  apache-jena = callPackage ../servers/nosql/apache-jena/binary.nix {
+    java = icedtea7_jdk;
+  };
+
   apcupsd = callPackage ../servers/apcupsd { };
 
   sabnzbd = callPackage ../servers/sabnzbd { };
@@ -7547,6 +7558,11 @@ let
     opencflite = callPackage ../os-specific/darwin/opencflite {};
 
     xcode = callPackage ../os-specific/darwin/xcode {};
+
+    osx_sdk = callPackage ../os-specific/darwin/osx-sdk {};
+    osx_private_sdk = callPackage ../os-specific/darwin/osx-private-sdk { inherit osx_sdk; };
+
+    security_tool = callPackage ../os-specific/darwin/security-tool { inherit osx_private_sdk; };
   };
 
   devicemapper = lvm2;
@@ -7879,6 +7895,8 @@ let
     perf = callPackage ../os-specific/linux/kernel/perf.nix { };
 
     psmouse_alps = callPackage ../os-specific/linux/psmouse-alps { };
+
+    seturgent = callPackage ../os-specific/linux/seturgent { };
 
     spl = callPackage ../os-specific/linux/spl { };
     spl_git = callPackage ../os-specific/linux/spl/git.nix { };
@@ -9484,6 +9502,10 @@ let
 
   keymon = callPackage ../applications/video/key-mon { };
 
+  kid3 = callPackage ../applications/audio/kid3 {
+    qt = qt4;
+  };
+
   kino = callPackage ../applications/video/kino {
     inherit (gnome) libglade;
   };
@@ -9727,7 +9749,7 @@ let
   mrxvt = callPackage ../applications/misc/mrxvt { };
 
   mudlet = callPackage ../games/mudlet {
-    inherit (lua51Packages) filesystem;
+    inherit (lua51Packages) luafilesystem lrexlib luazip luasqlite3;
   };
 
   multisync = callPackage ../applications/misc/multisync {
@@ -11448,6 +11470,18 @@ let
     lablgtk = ocamlPackages_3_12_1.lablgtk_2_14;
   };
 
+  mkCoqPackages_8_4 = self: let callPackage = newScope self; in {
+
+    containers = callPackage ../development/coq-modules/containers {};
+
+    mathcomp = callPackage ../development/coq-modules/mathcomp {};
+
+    ssreflect = callPackage ../development/coq-modules/ssreflect {};
+
+  };
+
+  coqPackages = recurseIntoAttrs (mkCoqPackages_8_4 coqPackages);
+
   cvc3 = callPackage ../applications/science/logic/cvc3 {};
 
   ekrhyper = callPackage ../applications/science/logic/ekrhyper {};
@@ -11472,6 +11506,7 @@ let
   isabelle = import ../applications/science/logic/isabelle {
     inherit (pkgs) stdenv fetchurl nettools perl polyml;
     inherit (pkgs.emacs24Packages) proofgeneral;
+    java = if stdenv.isLinux then jre else jdk;
   };
 
   iprover = callPackage ../applications/science/logic/iprover {};
@@ -11516,10 +11551,6 @@ let
   satallax = callPackage ../applications/science/logic/satallax {};
 
   spass = callPackage ../applications/science/logic/spass {};
-
-  ssreflect = callPackage ../applications/science/logic/ssreflect {
-    camlp5 = ocamlPackages.camlp5_transitional;
-  };
 
   tptp = callPackage ../applications/science/logic/tptp {};
 
@@ -11873,6 +11904,8 @@ let
 
   slock = callPackage ../misc/screensavers/slock { };
 
+  soundOfSorting = callPackage ../misc/sound-of-sorting { };
+
   sourceAndTags = import ../misc/source-and-tags {
     inherit pkgs stdenv unzip lib ctags;
     hasktags = haskellPackages.hasktags;
@@ -12066,8 +12099,8 @@ let
   snes9x-gtk = callPackage ../misc/emulators/snes9x-gtk { };
 
   higan = callPackage ../misc/emulators/higan {
-    profile = "accuracy";
-    gui = "gtk";
+    profile = config.higan.profile or "performance";
+    guiToolkit = config.higan.guiToolkit or "gtk";
   };
 
   misc = import ../misc/misc.nix { inherit pkgs stdenv; };
