@@ -273,6 +273,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   bktrees = callPackage ../development/libraries/haskell/bktrees {};
 
+  blankCanvas = callPackage ../development/libraries/haskell/blank-canvas {};
+
   blazeBuilder = callPackage ../development/libraries/haskell/blaze-builder {};
 
   blazeBuilderConduit = callPackage ../development/libraries/haskell/blaze-builder-conduit {};
@@ -639,6 +641,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   diagramsCairo = callPackage ../development/libraries/haskell/diagrams/cairo.nix {};
   diagramsCore = callPackage ../development/libraries/haskell/diagrams/core.nix {};
   diagramsContrib = callPackage ../development/libraries/haskell/diagrams/contrib.nix {};
+  diagramsGtk = callPackage ../development/libraries/haskell/diagrams/gtk.nix {};
   diagramsLib = callPackage ../development/libraries/haskell/diagrams/lib.nix {};
   diagramsPostscript = callPackage ../development/libraries/haskell/diagrams/postscript.nix {};
   diagramsRasterific = callPackage ../development/libraries/haskell/diagrams/rasterific.nix {};
@@ -914,6 +917,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   ghcPaths = callPackage ../development/libraries/haskell/ghc-paths {};
 
+  ghcParser = callPackage ../development/libraries/haskell/ghc-parser {};
+
   ghcSyb = callPackage ../development/libraries/haskell/ghc-syb {};
 
   ghcSybUtils = callPackage ../development/libraries/haskell/ghc-syb-utils {};
@@ -1020,6 +1025,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   Graphalyze = callPackage ../development/libraries/haskell/Graphalyze {};
 
+  graphmod = callPackage ../development/tools/haskell/graphmod {};
+
   graphviz = callPackage ../development/libraries/haskell/graphviz {};
 
   graphSCC = callPackage ../development/libraries/haskell/graphscc {};
@@ -1104,6 +1111,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   hedis = callPackage ../development/libraries/haskell/hedis {};
 
   heredoc = callPackage ../development/libraries/haskell/heredoc {};
+
+  here = callPackage ../development/libraries/haskell/here {};
 
   hexpat = callPackage ../development/libraries/haskell/hexpat {};
 
@@ -1347,6 +1356,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   ieee754 = callPackage ../development/libraries/haskell/ieee754 {};
 
+  ihaskell = callPackage ../development/tools/haskell/ihaskell {};
+
   imm = callPackage ../development/libraries/haskell/imm {};
 
   implicit = callPackage ../development/libraries/haskell/implicit {
@@ -1429,6 +1440,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   jwt = callPackage ../development/libraries/haskell/jwt {};
 
   kanExtensions = callPackage ../development/libraries/haskell/kan-extensions {};
+
+  kansasComet = callPackage ../development/libraries/haskell/kansas-comet {};
 
   kansasLava = callPackage ../development/libraries/haskell/kansas-lava {};
 
@@ -2213,8 +2226,6 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   setlocale = callPackage ../development/libraries/haskell/setlocale {};
 
-  shellCheck = callPackage ../development/libraries/haskell/ShellCheck {};
-
   shellish = callPackage ../development/libraries/haskell/shellish {};
 
   shellmate = callPackage ../development/libraries/haskell/shellmate {};
@@ -2432,6 +2443,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   SVGFonts = callPackage ../development/libraries/haskell/SVGFonts {};
 
   symbol = callPackage ../development/libraries/haskell/symbol {};
+
+  systemArgv0 = callPackage ../development/libraries/haskell/system-argv0 {};
 
   systemFilepath = callPackage ../development/libraries/haskell/system-filepath {};
 
@@ -2727,8 +2740,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   void = callPackage ../development/libraries/haskell/void {};
 
   vty_4_7_5 = callPackage ../development/libraries/haskell/vty/4.7.5.nix {};
-  vty_5_2_2 = callPackage ../development/libraries/haskell/vty/5.2.2.nix {};
-  vty = self.vty_5_2_2;
+  vty_5_2_3 = callPackage ../development/libraries/haskell/vty/5.2.3.nix {};
+  vty = self.vty_5_2_3;
 
   vtyUi = callPackage ../development/libraries/haskell/vty-ui {
     vty = self.vty_4_7_5;
@@ -3038,9 +3051,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   nc-indicators = callPackage ../applications/misc/nc-indicators {};
 
-  sloane = callPackage ../applications/science/math/sloane {
-    optparseApplicative = self.optparseApplicative_0_9_1_1;
-  };
+  sloane = callPackage ../applications/science/math/sloane {};
 
   taffybar = callPackage ../applications/misc/taffybar {};
 
@@ -3133,6 +3144,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   gitAnnex = callPackage ../applications/version-management/git-and-tools/git-annex {
     cabal = self.cabal.override { extension = self : super : { enableSharedExecutables = false; }; };
+    dbus = if pkgs.stdenv.isLinux then self.dbus else null;
+    fdoNotify = if pkgs.stdenv.isLinux then self.fdoNotify else null;
+    hinotify = if pkgs.stdenv.isLinux then self.hinotify else self.fsnotify;
   };
 
   githubBackup = callPackage ../applications/version-management/git-and-tools/github-backup {};
