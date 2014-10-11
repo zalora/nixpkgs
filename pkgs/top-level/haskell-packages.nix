@@ -435,6 +435,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   clay = callPackage ../development/libraries/haskell/clay {};
 
+  cleanUnions = callPackage ../development/libraries/haskell/clean-unions {};
+
   clientsession = callPackage ../development/libraries/haskell/clientsession {};
 
   clock = callPackage ../development/libraries/haskell/clock {};
@@ -1505,11 +1507,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   libjenkins = callPackage ../development/libraries/haskell/libjenkins {};
 
-  libmpd_0_8_0_5 = callPackage ../development/libraries/haskell/libmpd/0.8.0.5.nix {};
-
-  libmpd_0_9_0_1 = callPackage ../development/libraries/haskell/libmpd/0.9.0.1.nix {};
-
-  libmpd = self.libmpd_0_9_0_1;
+  libmpd = callPackage ../development/libraries/haskell/libmpd {};
 
   liblastfm = callPackage ../development/libraries/haskell/liblastfm {};
 
@@ -1524,6 +1522,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   liftedBase = callPackage ../development/libraries/haskell/lifted-base {};
 
   linear = callPackage ../development/libraries/haskell/linear {};
+
+  linuxInotify = callPackage ../development/libraries/haskell/linux-inotify {};
 
   List = callPackage ../development/libraries/haskell/List {};
 
@@ -1798,6 +1798,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   numtypeTf = callPackage ../development/libraries/haskell/numtype-tf {};
 
   OneTuple = callPackage ../development/libraries/haskell/OneTuple {};
+
+  objective = callPackage ../development/libraries/haskell/objective {};
 
   ObjectName = callPackage ../development/libraries/haskell/ObjectName {};
 
@@ -2619,6 +2621,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   trifecta = callPackage ../development/libraries/haskell/trifecta {};
 
+  trivia = callPackage ../development/libraries/haskell/trivia {};
+
   tuple = callPackage ../development/libraries/haskell/tuple {};
 
   twitterConduit = callPackage ../development/libraries/haskell/twitter-conduit {};
@@ -2770,6 +2774,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   warp = callPackage ../development/libraries/haskell/warp {};
 
   warpTls = callPackage ../development/libraries/haskell/warp-tls {};
+
+  WAVE = callPackage ../development/libraries/haskell/WAVE {};
 
   wcwidth = callPackage ../development/libraries/haskell/wcwidth {};
 
@@ -3062,10 +3068,6 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   yiContrib = callPackage ../applications/editors/yi/yi-contrib.nix {};
 
   xlsx = callPackage ../development/libraries/haskell/xlsx {};
-
-  xmobar = callPackage ../applications/misc/xmobar {
-    libmpd = self.libmpd_0_8_0_5;
-  };
 
   xmonad = callPackage ../applications/window-managers/xmonad {};
 

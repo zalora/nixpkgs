@@ -649,6 +649,8 @@ let
 
   consul_ui = consul.ui;
 
+  corosync = callPackage ../servers/corosync { };
+
   chntpw = callPackage ../tools/security/chntpw { };
 
   coprthr = callPackage ../development/libraries/coprthr {
@@ -658,6 +660,8 @@ let
   crawl = callPackage ../games/crawl { lua = lua5; };
 
   cv = callPackage ../tools/misc/cv { };
+
+  datamash = callPackage ../tools/misc/datamash { };
 
   direnv = callPackage ../tools/misc/direnv { };
 
@@ -674,6 +678,8 @@ let
   };
 
   fop = callPackage ../tools/typesetting/fop { };
+
+  gist = callPackage ../tools/text/gist { };
 
   mcrl = callPackage ../tools/misc/mcrl { };
 
@@ -1152,7 +1158,7 @@ let
   freeipmi = callPackage ../tools/system/freeipmi {};
 
   freetalk = callPackage ../applications/networking/instant-messengers/freetalk {
-    guile = guile_1_8;
+    automake = automake114x;
   };
 
   freetds = callPackage ../development/libraries/freetds { };
@@ -1338,7 +1344,7 @@ let
   gupnptools = callPackage ../tools/networking/gupnp-tools {};
 
   gvpe = builderDefsPackage ../tools/networking/gvpe {
-    inherit openssl gmp nettools iproute;
+    inherit openssl gmp nettools iproute zlib;
   };
 
   gvolicon = callPackage ../tools/audio/gvolicon {};
@@ -1544,11 +1550,19 @@ let
 
   libshout = callPackage ../development/libraries/libshout { };
 
+  libqb = callPackage ../development/libraries/libqb { };
+
   libqmi = callPackage ../development/libraries/libqmi { };
 
   libmbim = callPackage ../development/libraries/libmbim { };
 
   libtorrent = callPackage ../tools/networking/p2p/libtorrent { };
+
+  libtorrent-git = callPackage ../tools/networking/p2p/libtorrent/git.nix { };
+
+  libibverbs = callPackage ../development/libraries/libibverbs { };
+
+  librdmacm = callPackage ../development/libraries/librdmacm { };
 
   logcheck = callPackage ../tools/system/logcheck {
     inherit (perlPackages) mimeConstruct;
@@ -1650,6 +1664,8 @@ let
   mkcue = callPackage ../tools/cd-dvd/mkcue { };
 
   mkpasswd = callPackage ../tools/security/mkpasswd { };
+
+  mkrand = callPackage ../tools/security/mkrand { };
 
   mktemp = callPackage ../tools/security/mktemp { };
 
@@ -1878,6 +1894,8 @@ let
 
   spCompat = callPackage ../tools/text/sgml/opensp/compat.nix { };
 
+  opentracker = callPackage ../applications/networking/p2p/opentracker { };
+
   openvpn = callPackage ../tools/networking/openvpn { };
 
   openvpn_learnaddress = callPackage ../tools/networking/openvpn/openvpn_learnaddress.nix { };
@@ -2027,8 +2045,6 @@ let
 
   projectm = callPackage ../applications/audio/projectm { };
 
-  proot = callPackage ../tools/system/proot { };
-
   proxychains = callPackage ../tools/networking/proxychains { };
 
   proxytunnel = callPackage ../tools/misc/proxytunnel { };
@@ -2082,6 +2098,8 @@ let
   ranger = callPackage ../applications/misc/ranger { };
 
   privateer = callPackage ../games/privateer { };
+
+  redmine = callPackage ../applications/version-management/redmine { };
 
   rtmpdump = callPackage ../tools/video/rtmpdump { };
 
@@ -2147,6 +2165,8 @@ let
 
   rtorrent = callPackage ../tools/networking/p2p/rtorrent { };
 
+  rtorrent-git = callPackage ../tools/networking/p2p/rtorrent/git.nix { };
+
   rubber = callPackage ../tools/typesetting/rubber { };
 
   rxp = callPackage ../tools/text/xml/rxp { };
@@ -2210,6 +2230,8 @@ let
   shellinabox = callPackage ../servers/shellinabox { };
 
   siege = callPackage ../tools/networking/siege {};
+
+  sigil = callPackage ../applications/editors/sigil { };
 
   silc_client = callPackage ../applications/networking/instant-messengers/silc-client { };
 
@@ -2671,6 +2693,19 @@ let
   xmlto = callPackage ../tools/typesetting/xmlto { };
 
   xmltv = callPackage ../tools/misc/xmltv { };
+
+  xmobar = let haskellPackagesExt = haskellPackages.override {
+      extension = self : super : {
+        # We need to disable tests unfortunately because doctest
+        # does not work with transformers-overrides, because it
+        # uses the GHC API.
+        cabal = super.cabal.override { enableCheckPhase = false; };
+
+        transformers = self.transformers_0_4_1_0;
+        mtl = self.mtl_2_2_1;
+      };
+    };
+    in haskellPackagesExt.callPackage ../applications/misc/xmobar {};
 
   xmpppy = builderDefsPackage (import ../development/python-modules/xmpppy) {
     inherit python setuptools;
@@ -3200,6 +3235,7 @@ let
   icedtea7_jdk = callPackage ../development/compilers/icedtea rec {
     jdk = openjdk;
     jdkPath = "${openjdk}/lib/openjdk";
+    giflib = giflib_5_0;
   } // { outputs = [ "out" ]; };
 
   icedtea7_jre = (lib.setName "icedtea7-${lib.getVersion pkgs.icedtea7_jdk.jre}" (lib.addMetaAttrs
@@ -3471,6 +3507,8 @@ let
 
     lambdaTerm = callPackage ../development/ocaml-modules/lambda-term { };
 
+    macaque = callPackage ../development/ocaml-modules/macaque { };
+
     menhir = callPackage ../development/ocaml-modules/menhir { };
 
     merlin = callPackage ../development/tools/ocaml/merlin { };
@@ -3513,7 +3551,10 @@ let
       inherit pcre;
     };
 
+    pgocaml = callPackage ../development/ocaml-modules/pgocaml {};
+
     ocaml_react = callPackage ../development/ocaml-modules/react { };
+    reactivedata = callPackage ../development/ocaml-modules/reactivedata {};
 
     ocamlsdl= callPackage ../development/ocaml-modules/ocamlsdl { };
 
@@ -3929,6 +3970,8 @@ let
   pythonLinkmeWrapper = callPackage ../development/interpreters/python/python-linkme-wrapper.nix { };
 
   pypi2nix = python27Packages.pypi2nix;
+
+  svg2tikz = python27Packages.svg2tikz;
 
   pyrex = pyrex095;
 
@@ -5188,6 +5231,8 @@ let
       else stdenv;
   };
 
+  granite = callPackage ../development/libraries/granite { };
+
   gtk2 = callPackage ../development/libraries/gtk+/2.x.nix {
     cupsSupport = config.gtk2.cups or stdenv.isLinux;
   };
@@ -5485,6 +5530,8 @@ let
   libedit = callPackage ../development/libraries/libedit { };
 
   libelf = callPackage ../development/libraries/libelf { };
+
+  libetpan = callPackage ../development/libraries/libetpan { };
 
   libfm = callPackage ../development/libraries/libfm { };
   libfm-extra = callPackage ../development/libraries/libfm {
@@ -5850,6 +5897,8 @@ let
 
   libspatialite = callPackage ../development/libraries/libspatialite { };
 
+  libstatgrab = callPackage ../development/libraries/libstatgrab { };
+
   libtar = callPackage ../development/libraries/libtar { };
 
   libtasn1 = callPackage ../development/libraries/libtasn1 { };
@@ -5885,7 +5934,7 @@ let
 
   libupnp = callPackage ../development/libraries/pupnp { };
 
-  giflib = giflib_5_0;
+  giflib = giflib_5_1;
   giflib_4_1 = callPackage ../development/libraries/giflib/4.1.nix { };
   giflib_5_0 = callPackage ../development/libraries/giflib/5.0.nix { };
   giflib_5_1 = callPackage ../development/libraries/giflib/5.1.nix { };
@@ -8756,6 +8805,10 @@ let
 
   cinelerra = callPackage ../applications/video/cinelerra { };
 
+  clawsMail = callPackage ../applications/networking/mailreaders/claws-mail {
+    enableNetworkManager = config.networking.networkmanager.enable or false;
+  };
+
   clipit = callPackage ../applications/misc/clipit { };
 
   cmplayer = callPackage ../applications/video/cmplayer {
@@ -9577,6 +9630,8 @@ let
     inherit (gnome) libglade;
   };
 
+  libowfat = callPackage ../development/libraries/libowfat { };
+
   librecad = callPackage ../applications/misc/librecad { };
 
   librecad2 = callPackage ../applications/misc/librecad/2.0.nix { };
@@ -9829,6 +9884,8 @@ let
   shotcut = callPackage ../applications/video/shotcut { mlt = mlt-qt5; };
 
   smplayer = callPackage ../applications/video/smplayer { };
+
+  smtube = callPackage ../applications/video/smtube {};
 
   sup = with rubyLibs; callPackage ../applications/networking/mailreaders/sup {
     ruby = ruby_1_9_3.override {
@@ -11214,15 +11271,7 @@ let
 
   kakasi = callPackage ../tools/text/kakasi { };
 
-  kde4 = recurseIntoAttrs pkgs.kde412;
-
-  kde4_next = recurseIntoAttrs( lib.lowPrioSet pkgs.kde414 );
-
-  kde412 = kdePackagesFor (pkgs.kde412 // {
-      eigen = eigen2;
-      libusb = libusb1;
-      libcanberra = libcanberra_kde;
-    }) ../desktops/kde-4.12;
+  kde4 = recurseIntoAttrs pkgs.kde414;
 
   kde414 = kdePackagesFor (pkgs.kde414 // {
       libusb = libusb1;
@@ -11242,8 +11291,6 @@ let
       wrapper = callPackage ../build-support/kdewrapper {};
 
       recurseForRelease = true;
-
-      akunambol = callPackage ../applications/networking/sync/akunambol { };
 
       amarok = callPackage ../applications/audio/amarok { };
 
@@ -11378,6 +11425,11 @@ let
 
       kwooty = callPackage ../applications/networking/newsreaders/kwooty { };
     };
+
+  pantheon = recurseIntoAttrs rec {
+    callPackage = newScope pkgs.pantheon;
+    pantheon-terminal = callPackage ../desktops/pantheon/apps/pantheon-terminal { };
+  };
 
   redshift = callPackage ../applications/misc/redshift {
     inherit (xorg) libX11 libXrandr libxcb randrproto libXxf86vm
@@ -11540,6 +11592,8 @@ let
     mathcomp = callPackage ../development/coq-modules/mathcomp {};
 
     ssreflect = callPackage ../development/coq-modules/ssreflect {};
+
+    tlc = callPackage ../development/coq-modules/tlc {};
 
   };
 
@@ -11743,22 +11797,22 @@ let
   ### SCIENCE / PHYSICS
 
   geant4 = callPackage ../development/libraries/physics/geant4 {
-    enableMultiThreading = true; 
+    enableMultiThreading = true;
     enableG3toG4         = false;
     enableInventor       = false;
     enableGDML           = false;
     enableQT             = false;
     enableXM             = false;
-    enableOpenGLX11      = true; 
+    enableOpenGLX11      = true;
     enableRaytracerX11   = false;
 
-    # Optional system packages, otherwise internal GEANT4 packages are used. 
-    clhep = null; 
+    # Optional system packages, otherwise internal GEANT4 packages are used.
+    clhep = null;
     expat = expat;
-    zlib  = null; 
+    zlib  = null;
 
     # For enableGDML.
-    xercesc = null; 
+    xercesc = null;
 
     # For enableQT.
     qt = null; # qt4SDK or qt5SDK

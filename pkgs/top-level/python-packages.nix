@@ -23,7 +23,6 @@ let
     sqlite3 = null;
     curses = null;
     curses_panel = null;
-    ssl = null;
     crypt = null;
   };
 
@@ -512,11 +511,11 @@ let
   });
 
   astroid = buildPythonPackage (rec {
-    name = "astroid-1.1.1";
+    name = "astroid-1.2.1";
     propagatedBuildInputs = [ logilab_common ];
     src = fetchurl {
-      url = "https://pypi.python.org/packages/source/a/astroid/${name}.tar.gz";
-      sha256 = "1x7103mlzndgg66yas6xrfwkwpihcq4bi9m8py1fjnhz8p5ka1vq";
+      url = "https://pypi.python.org/packages/source/a/astroid/${name}.zip";
+      md5 = "337017c82a28c97741797493fb2c980f";
     };
   });
 
@@ -760,6 +759,33 @@ let
       description = "Music tagger and library organizer";
       license = licenses.mit;
       maintainers = [ stdenv.lib.maintainers.iElectric ];
+    };
+  };
+  
+  circus = buildPythonPackage rec {
+    name = "circus-0.11.1";
+
+    src = fetchurl {
+      url = "https://pypi.python.org/packages/source/c/circus/${name}.tar.gz";
+      md5 = "5c07cdbe9bb4a9b82e52737ad590617b";
+    };
+
+    doCheck = false; # weird error 
+
+    propagatedBuildInputs = with pythonPackages; [ iowait psutil pyzmq tornado mock ];
+  };
+
+  iowait = buildPythonPackage rec {
+    name = "iowait-0.2";
+
+    src = fetchurl {
+      url = "https://pypi.python.org/packages/source/i/iowait/${name}.tar.gz";
+      md5 = "f49ca7766fe4a67e03a731e575614f87";
+    };
+
+    meta = with stdenv.lib; {
+      description = "Platform-independent module for I/O completion events";
+      homepage = https://launchpad.net/python-iowait;
     };
   };
 
@@ -1013,7 +1039,7 @@ let
   #     rev = "refs/tags/0.9.3";
   #   };
   #
-  #   propagatedBuildInputs = [ pythonPackages.argparse modules.ssl ];
+  #   propagatedBuildInputs = [ pythonPackages.argparse ];
   #
   #   doCheck = false;
   #
@@ -4856,11 +4882,11 @@ let
 
   rainbowstream = buildPythonPackage rec {
     name = "rainbowstream-${version}";
-    version = "0.9.5";
+    version = "1.1.6";
 
     src = fetchurl {
       url    = "https://pypi.python.org/packages/source/r/rainbowstream/${name}.tar.gz";
-      sha256 = "0v79xiihgsfjipxkzzi92l8y1f8vxxachpv71gyzyhxdsl2zfj57";
+      sha256 = "04i2a8a5k6n6lgfpa9bzzbkhvywgd4bn3qlspl97pn8ply9kgszm";
     };
 
     doCheck = false;
@@ -4870,9 +4896,16 @@ let
       export LC_ALL="en_US.UTF-8"
     '';
 
+    postInstall = ''
+      for prog in "$out/bin/"*; do
+        wrapProgram "$prog" \
+          --prefix PYTHONPATH : "$PYTHONPATH"
+      done
+    '';
+
     buildInputs = [
       pkgs.libjpeg pkgs.freetype pkgs.zlib
-      pillow twitter pyfiglet requests arrow dateutil modules.readline
+      pillow twitter pyfiglet requests arrow dateutil modules.readline pysocks
     ];
 
     meta = {
@@ -5213,12 +5246,12 @@ let
 
 
   nbxmpp = buildPythonPackage rec {
-    name = "nbxmpp-0.5";
+    name = "nbxmpp-0.5.1";
 
     src = fetchurl {
       name = "${name}.tar.gz";
-      url = "https://python-nbxmpp.gajim.org/downloads/5";
-      sha256 = "0y270c9v4i9n58p4ghlm18h50qcfichmfkgcpqd3bypx4fkmdx90";
+      url = "https://python-nbxmpp.gajim.org/downloads/6";
+      sha256 = "0agr0ikfdmna5rjvm7lm0mx52cdwqp5b2xbx3inagp70whmdv219";
     };
 
     meta = {
@@ -6512,11 +6545,11 @@ let
 
   pyfiglet = buildPythonPackage rec {
     name = "pyfiglet-${version}";
-    version = "0.7.1";
+    version = "0.7.2";
 
     src = fetchurl {
       url    = "https://pypi.python.org/packages/source/p/pyfiglet/${name}.tar.gz";
-      sha256 = "14lgwg47gnnad7sfkmmwhknwysbfmr74c9b2a6d9wgjmydycc6ka";
+      sha256 = "0v8a18wvaqnb1jksyv5dc5n6zj0vrkyhz0ivmm8gfwpa0ky6n68y";
     };
 
     doCheck = false;
@@ -6830,6 +6863,24 @@ let
       license = licenses.bsd2;
       platforms = platforms.all;
       maintainers = [ maintainers.koral ];
+    };
+  };
+
+  pysocks = buildPythonPackage rec {
+    name = "pysocks-${version}";
+    version = "1.5.0";
+
+    src = fetchurl {
+      url    = "https://pypi.python.org/packages/source/P/PySocks/PySocks-${version}.tar.gz";
+      sha256 = "10wq5311qrnk8rvzsh6gwzxi7h51pgvzw3d7s1mb39fsvf0vyjdk";
+    };
+
+    doCheck = false;
+
+    meta = {
+      description = "SOCKS module for Python";
+      license     = licenses.bsd3;
+      maintainers = [ maintainers.thoughtpolice ];
     };
   };
 
@@ -8994,11 +9045,11 @@ let
 
   twitter = buildPythonPackage rec {
     name = "twitter-${version}";
-    version = "1.14.3";
+    version = "1.15.0";
 
     src = fetchurl {
       url    = "https://pypi.python.org/packages/source/t/twitter/${name}.tar.gz";
-      sha256 = "1nhhjajbq0jik43q2makpnz094qcziq9p8rj35jxamybd0hwwzs9";
+      sha256 = "1m6b17irb9klc345k8174pni724jzy2973z2x2jg69h83hipjw2c";
     };
 
     doCheck = false;
@@ -9315,7 +9366,7 @@ let
       md5 = "8437607c0cc00c35f658f972516ffb55";
     };
 
-    propagatedBuildInputs = [ nose modules.ssl ];
+    propagatedBuildInputs = [ nose ];
 
     meta = {
       description = "WSGI request and response object";
@@ -10509,6 +10560,8 @@ let
   ujson = buildPythonPackage rec {
     name = "ujson-1.33";
 
+    disabled = isPyPy;
+
     src = fetchurl {
       url = "https://pypi.python.org/packages/source/u/ujson/${name}.zip";
       md5 = "8148a2493fff78940feab1e11dc0a893";
@@ -10853,11 +10906,11 @@ let
 
   libvirt = pkgs.stdenv.mkDerivation rec {
     name = "libvirt-python-${version}";
-    version = "1.2.7";
+    version = "1.2.9";
 
     src = fetchurl {
       url = "http://libvirt.org/sources/python/${name}.tar.gz";
-      sha256 = "0wg0pnvrwfjdl8haxr2dyfhdasddq97zy6l27xwrvd1hnh1394f1";
+      sha256 = "1vbrkwvsvcfgibdw4drcypg2n6zcpi3zv23zw20nkk5fjfp26w4g";
     };
 
     buildInputs = [ python pkgs.pkgconfig pkgs.libvirt lxml ];
@@ -11094,6 +11147,24 @@ let
     };
   };
 
+  svg2tikz = pythonPackages.buildPythonPackage {
+    name = "svg2tikz-1.0.0";
+
+    propagatedBuildInputs = [lxml];
+
+    src = pkgs.fetchgit {
+      url = "https://github.com/kjellmf/svg2tikz";
+      sha256 = "429428ec435e53672b85cdfbb89bb8af0ff9f8238f5d05970729e5177d252d5f";
+      rev = "ad36f2c3818da13c4136d70a0fd8153acf8daef4";
+    };
+
+    meta = {
+      homepage = https://github.com/kjellmf/svg2tikz;
+      description = "An SVG to TikZ converter";
+      license = stdenv.lib.licenses.gpl2Plus;
+      maintainers =  with pkgs.stdenv.lib.maintainers; [gal_bolle];
+    };
+  };
 
   thumbor = pythonPackages.buildPythonPackage rec {
     name = "thumbor-4.0.4";

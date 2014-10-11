@@ -38,6 +38,7 @@
   cfouche = "Chaddaï Fouché <chaddai.fouche@gmail.com>";
   chaoflow = "Florian Friesdorf <flo@chaoflow.net>";
   coconnor = "Corey O'Connor <coreyoconnor@gmail.com>";
+  codyopel = "Cody Opel <codyopel@gmail.com>";
   copumpkin = "Dan Peebles <pumpkingod@gmail.com>";
   coroa = "Jonas Hörsch <jonas@chaoflow.net>";
   cstrahan = "Charles Strahan <charles.c.strahan@gmail.com>";
@@ -138,6 +139,7 @@
   viric = "Lluís Batlle i Rossell <viric@viric.name>";
   vizanto = "Danny Wilson <danny@prime.vc>";
   vlstill = "Vladimír Štill <xstill@fi.muni.cz>";
+  vozz = "Oliver Hunt <oliver.huntuk@gmail.com>";
   winden = "Antonio Vargas Gonzalez <windenntw@gmail.com>";
   wizeman = "Ricardo M. Correia <rcorreia@wizy.org>";
   wjlroe = "William Roe <willroe@gmail.com>";
