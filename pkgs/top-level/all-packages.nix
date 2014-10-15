@@ -11132,6 +11132,8 @@ let
 
   rssglx = callPackage ../misc/screensavers/rss-glx { };
 
+  runit = callPackage ../tools/system/runit { };
+
   xlockmore = callPackage ../misc/screensavers/xlockmore { };
 
   samsungUnifiedLinuxDriver = import ../misc/cups/drivers/samsung {
