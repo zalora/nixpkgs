@@ -985,11 +985,11 @@ let
 
   boto = buildPythonPackage rec {
     name = "boto-${version}";
-    version = "2.32.0";
+    version = "2.34.0";
 
     src = pkgs.fetchurl {
       url = "https://github.com/boto/boto/archive/${version}.tar.gz";
-      sha256 = "0bl5y7m0m84rz4q7hx783kxpj1n9wcm7dhv54bnx8cnanyd13cxn";
+      sha256 = "08zavyn02qng9y0251a9mrlkb3aw33m7gx5kc97hwngl3xk3s777";
     };
 
     # The tests seem to require AWS credentials.
@@ -1012,12 +1012,12 @@ let
 
 
   botocore = buildPythonPackage rec {
-    version = "0.33.0";
+    version = "0.67.0";
     name = "botocore-${version}";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/b/botocore/${name}.tar.gz";
-      md5 = "6743c73a2e148abaa9c487a6e2ee53a3";
+      md5 = "193fe828525af4ae58e04bd172dc355f";
     };
 
     propagatedBuildInputs =
@@ -1056,6 +1056,31 @@ let
     };
   };
 
+  box2d = buildPythonPackage rec {
+    name = "box2d-${version}";
+    version = "2.3b0";
+    disabled = (!isPy27);
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/B/Box2D/Box2D-2.3b0.zip";
+      md5="25fc4f69cd580bdca0022ac3ace53865";
+    };
+
+    patches = [ ../development/python-modules/box2d/disable-test.patch ];
+
+    propagatedBuildInputs = [ pkgs.swig pkgs.box2d ];
+
+    meta = with stdenv.lib; {
+      homepage = https://code.google.com/p/pybox2d/;
+      description = ''
+        A 2D game physics library for Python under
+        the very liberal zlib license
+      '';
+      license = licenses.zlib;
+      platforms = platforms.all;
+      maintainers = [ maintainers.sepi ];
+    };
+  };
 
   # bugz = buildPythonPackage (rec {
   #   name = "bugz-0.9.3";
@@ -4514,11 +4539,11 @@ let
 
 
   jmespath = buildPythonPackage rec {
-    name = "jmespath-0.2.1";
+    name = "jmespath-0.4.1";
 
     src = pkgs.fetchurl {
-      url = "https://pypi.python.org/packages/source/j/jmespath/jmespath-0.2.1.tar.gz";
-      md5 = "7800775aa12c6303f9ad597b6a8fa03c";
+      url = "https://pypi.python.org/packages/source/j/jmespath/${name}.tar.gz";
+      md5 = "a11ae39472672a650dfb55feab7d65eb";
     };
 
     propagatedBuildInputs = with self; [ ply ];
@@ -8608,7 +8633,21 @@ let
       md5 = "754c5ab9f533e764f931136974b618f1";
     };
 
-    doCheck = false;
+    buildInputs = [ pkgs.bash ];
+
+    preConfigure = ''
+      substituteInPlace test_subprocess32.py \
+        --replace '/usr/' '${pkgs.bash}/'
+    '';
+
+    checkPhase = ''
+      TMP_PREFIX=`pwd`/tmp/$name
+      TMP_INSTALL_DIR=$TMP_PREFIX/lib/${pythonPackages.python.libPrefix}/site-packages
+      PYTHONPATH="$TMP_INSTALL_DIR:$PYTHONPATH"
+      mkdir -p $TMP_INSTALL_DIR
+      python setup.py develop --prefix $TMP_PREFIX
+      python test_subprocess32.py
+    '';
 
     meta = {
       homepage = "https://pypi.python.org/pypi/subprocess32";
@@ -9442,7 +9481,11 @@ let
     preConfigure = "export HOME=$TMPDIR";
 
     buildInputs = with self; [ pbr pip pkgs.which ];
-    propagatedBuildInputs = with self; [ stevedore virtualenv virtualenv-clone ];
+    propagatedBuildInputs = with self; [
+      stevedore
+      virtualenv
+      virtualenv-clone
+    ] ++ optional isPy26 argparse;
 
     patchPhase = ''
       substituteInPlace "virtualenvwrapper.sh" --replace "which" "${pkgs.which}/bin/which"

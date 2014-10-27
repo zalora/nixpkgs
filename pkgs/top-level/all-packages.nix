@@ -772,6 +772,8 @@ let
     par2Support = (config.bup.par2Support or false);
   };
 
+  byzanz = callPackage ../applications/video/byzanz {};
+
   ori = callPackage ../tools/backup/ori { };
 
   atool = callPackage ../tools/archivers/atool { };
@@ -1108,6 +1110,8 @@ let
   fcitx = callPackage ../tools/inputmethods/fcitx { };
 
   fcitx-anthy = callPackage ../tools/inputmethods/fcitx/fcitx-anthy.nix { };
+
+  fcitx-configtool = callPackage ../tools/inputmethods/fcitx/fcitx-configtool.nix { };
 
   fcron = callPackage ../tools/system/fcron { };
 
@@ -1545,6 +1549,8 @@ let
 
   ldns = callPackage ../development/libraries/ldns { };
 
+  leafpad = callPackage ../applications/editors/leafpad { };
+
   lftp = callPackage ../tools/networking/lftp { };
 
   libconfig = callPackage ../development/libraries/libconfig { };
@@ -1864,6 +1870,8 @@ let
   };
 
   opencryptoki = callPackage ../tools/security/opencryptoki { };
+
+  onscripter-en = callPackage ../games/onscripter-en { };
 
   opendbx = callPackage ../development/libraries/opendbx { };
 
@@ -2391,6 +2399,8 @@ let
   # Work In Progress: it doesn't start unless running a daemon as root
   teamviewer8 = lowPrio (callPackage_i686 ../applications/networking/remote/teamviewer/8.nix { });
 
+  teamviewer9 = lowPrio (callPackage_i686 ../applications/networking/remote/teamviewer/9.nix { });
+
   telnet = callPackage ../tools/networking/telnet { };
 
   texmacs = callPackage ../applications/editors/texmacs {
@@ -2526,6 +2536,8 @@ let
   htmlTidy = callPackage ../tools/text/html-tidy { };
 
   html-xml-utils = callPackage ../tools/text/xml/html-xml-utils { };
+
+  rcm = callPackage ../tools/misc/rcm {};
 
   tftp_hpa = callPackage ../tools/networking/tftp-hpa {};
 
@@ -2733,7 +2745,7 @@ let
 
   xvfb_run = callPackage ../tools/misc/xvfb-run { inherit (texFunctions) fontsConf; };
 
-  youtubeDL = callPackage ../tools/misc/youtube-dl { };
+  youtube-dl = callPackage ../tools/misc/youtube-dl { };
 
   zbar = callPackage ../tools/graphics/zbar {
     pygtk = lib.overrideDerivation pygtk (x: {
@@ -3947,10 +3959,7 @@ let
 
   polyml = callPackage ../development/compilers/polyml { };
 
-  pure = callPackage ../development/interpreters/pure {
-    llvm = llvm_34 ;
-  };
-
+  pure = callPackage ../development/interpreters/pure { };
   pure-gsl = callPackage ../development/pure-modules/pure-gsl { };
 
   python = python2;
@@ -4031,13 +4040,14 @@ let
   ruby_2_1_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.0.nix { });
   ruby_2_1_1 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.1.nix { });
   ruby_2_1_2 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.2.nix { });
+  ruby_2_1_3 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.3.nix { });
 
   # Ruby aliases
   ruby = ruby_1_9;
   ruby_1_8 = ruby_1_8_7;
   ruby_1_9 = ruby_1_9_3;
   ruby_2_0 = ruby_2_0_0;
-  ruby_2_1 = ruby_2_1_2;
+  ruby_2_1 = ruby_2_1_3;
 
   rubyLibs = recurseIntoAttrs (callPackage ../development/interpreters/ruby/libs.nix { });
 
@@ -4261,6 +4271,8 @@ let
   chromedriver = callPackage ../development/tools/selenium/chromedriver { gconf = gnome.GConf; };
 
   chrpath = callPackage ../development/tools/misc/chrpath { };
+
+  chruby = callPackage ../development/tools/misc/chruby { rubies = null; };
 
   "cl-launch" = callPackage ../development/tools/misc/cl-launch {};
 
@@ -5329,6 +5341,10 @@ let
 
   herqq = callPackage ../development/libraries/herqq { };
 
+  hidapi = callPackage ../development/libraries/hidapi {
+    libusb = libusb1;
+  };
+
   hspell = callPackage ../development/libraries/hspell { };
 
   hspellDicts = callPackage ../development/libraries/hspell/dicts.nix { };
@@ -5975,6 +5991,8 @@ let
 
   libgeotiff = callPackage ../development/libraries/libgeotiff { };
 
+  libu2f-host = callPackage ../development/libraries/libu2f-host { };
+
   libunistring = callPackage ../development/libraries/libunistring { };
 
   libupnp = callPackage ../development/libraries/pupnp { };
@@ -6076,7 +6094,9 @@ let
 
   libyamlcpp = callPackage ../development/libraries/libyaml-cpp { };
 
-  libyubikey = callPackage ../development/libraries/libyubikey {};
+  libykneomgr = callPackage ../development/libraries/libykneomgr { };
+
+  libyubikey = callPackage ../development/libraries/libyubikey { };
 
   libzip = callPackage ../development/libraries/libzip { };
 
@@ -6668,14 +6688,9 @@ let
 
   srtp_linphone = callPackage ../development/libraries/srtp/linphone.nix { };
 
-  sqlite = lowPrio (callPackage ../development/libraries/sqlite {
-    readline = null;
-    ncurses = null;
-  });
+  sqlite = lowPrio (callPackage ../development/libraries/sqlite { });
 
-  sqliteInteractive = appendToName "interactive" (sqlite.override {
-    inherit readline ncurses;
-  });
+  sqliteInteractive = appendToName "interactive" (sqlite.override { interactive = true; });
 
   sqlcipher = lowPrio (callPackage ../development/libraries/sqlcipher {
     readline = null;
@@ -6896,6 +6911,14 @@ let
   xylib = callPackage ../development/libraries/xylib { };
 
   yajl = callPackage ../development/libraries/yajl { };
+
+  yubikey-personalization = callPackage ../tools/misc/yubikey-personalization {
+    libusb = libusb1;
+  };
+
+  yubikey-personalization-gui = callPackage ../tools/misc/yubikey-personalization-gui {
+    qt = qt4;
+  };
 
   zangband = builderDefsPackage (import ../games/zangband) {
     inherit ncurses flex bison autoconf automake m4 coreutils;
@@ -8964,6 +8987,8 @@ let
     enableXft = config.dmenu.enableXft or false;
   };
 
+  dmenu2 = callPackage ../applications/misc/dmenu2 { };
+
   dmtx = dmtx-utils;
 
   dmtx-utils = callPackage (import ../tools/graphics/dmtx-utils) {
@@ -9076,6 +9101,8 @@ let
     gitModes = callPackage ../applications/editors/emacs-modes/git-modes { };
 
     haskellMode = callPackage ../applications/editors/emacs-modes/haskell { };
+
+    hsc3Mode = callPackage ../applications/editors/emacs-modes/hsc3 { };
 
     hol_light_mode = callPackage ../applications/editors/emacs-modes/hol_light { };
 
@@ -10108,7 +10135,7 @@ let
     startupnotification = libstartup_notification;
   };
 
-  pidginWrapper = callPackage ../applications/networking/instant-messengers/pidgin/wrapper.nix {
+  pidgin-with-plugins = callPackage ../applications/networking/instant-messengers/pidgin/wrapper.nix {
     plugins = [];
   };
 
@@ -10235,6 +10262,14 @@ let
     perlSupport = true;
     gdkPixbufSupport = true;
     unicode3Support = true;
+  };
+
+  # urxvt plugins
+  urxvt_perls = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-perls { };
+  urxvt_tabbedex = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-tabbedex { };
+
+  rxvt_unicode_with-plugins = callPackage ../applications/misc/rxvt_unicode/wrapper.nix {
+    plugins = [ urxvt_perls urxvt_tabbedex ];
   };
 
   sakura = callPackage ../applications/misc/sakura {
@@ -10926,6 +10961,7 @@ let
     (let callPackage = newScope pkgs.zathuraCollection; in
       import ../applications/misc/zathura {
         inherit callPackage pkgs fetchurl;
+        stdenv = overrideGCC stdenv gcc49;
         useMupdf = config.zathura.useMupdf or false;
       });
 
@@ -10937,6 +10973,7 @@ let
 
   girara = callPackage ../applications/misc/girara {
     gtk = gtk3;
+    stdenv = overrideGCC stdenv gcc49;
   };
 
   zgrviewer = callPackage ../applications/graphics/zgrviewer {};
@@ -12330,6 +12367,8 @@ let
 
   yandex-disk = callPackage ../tools/filesystems/yandex-disk { };
 
+  zdfmediathk = callPackage ../applications/video/zdfmediathk { };
+
   myEnvFun = import ../misc/my-env {
     inherit substituteAll pkgs;
     inherit (stdenv) mkDerivation;
@@ -12389,6 +12428,7 @@ let
   lttngTools = lttng-tools;  # added 2014-07-31
   lttngUst = lttng-ust;  # added 2014-07-31
   jquery_ui = jquery-ui;  # added 2014-09-07
+  youtubeDL = youtube-dl;  # added 2014-10-26
 
 
 }; in self; in pkgs
