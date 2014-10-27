@@ -132,5 +132,6 @@ in zipModules ([]
 ++ obsolete' [ "boot" "initrd" "luks" "enable" ]
 ++ obsolete' [ "programs" "bash" "enable" ]
 ++ obsolete' [ "services" "syslog-ng" "serviceName" ]
+++ obsolete' [ "services" "syslog-ng" "listenToJournal" ]
 
 )

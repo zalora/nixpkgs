@@ -7,8 +7,7 @@ let
   cfg = config.services.syslog-ng;
 
   syslogngConfig = pkgs.writeText "syslog-ng.conf" ''
-    @version: 3.5
-    @include "scl.conf"
+    ${cfg.configHeader}
     ${cfg.extraConfig}
   '';
 
@@ -44,19 +43,12 @@ in {
           The package providing syslog-ng binaries.
         '';
       };
-      listenToJournal = mkOption {
-        type = types.bool;
-        default = true;
-        description = ''
-          Whether syslog-ng should listen to the syslog socket used
-          by journald, and therefore receive all logs that journald
-          produces.
-        '';
-      };
       extraModulePaths = mkOption {
         type = types.listOf types.str;
         default = [];
-        example = [ "${pkgs.syslogng_incubator}/lib/syslog-ng" ];
+        example = literalExample ''
+          [ "''${pkgs.syslogng_incubator}/lib/syslog-ng" ]
+        '';
         description = ''
           A list of paths that should be included in syslog-ng's
           <literal>--module-path</literal> option. They should usually
@@ -70,22 +62,28 @@ in {
           Configuration added to the end of <literal>syslog-ng.conf</literal>.
         '';
       };
+      configHeader = mkOption {
+        type = types.lines;
+        default = ''
+          @version: 3.6
+          @include "scl.conf"
+        '';
+        description = ''
+          The very first lines of the configuration file. Should usually contain
+          the syslog-ng version header.
+        '';
+      };
     };
   };
 
   config = mkIf cfg.enable {
-    systemd.sockets.syslog = mkIf cfg.listenToJournal {
-      wantedBy = [ "sockets.target" ];
-      socketConfig.Service = "syslog-ng.service";
-    };
     systemd.services.syslog-ng = {
       description = "syslog-ng daemon";
       preStart = "mkdir -p /{var,run}/syslog-ng";
-      wantedBy = optional (!cfg.listenToJournal) "multi-user.target";
+      wantedBy = [ "multi-user.target" ];
       after = [ "multi-user.target" ]; # makes sure hostname etc is set
       serviceConfig = {
         Type = "notify";
-        Sockets = if cfg.listenToJournal then "syslog.socket" else null;
         StandardOutput = "null";
         Restart = "on-failure";
         ExecStart = "${cfg.package}/sbin/syslog-ng ${concatStringsSep " " syslogngOptions}";
