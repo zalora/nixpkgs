@@ -2160,13 +2160,13 @@ let
 
 
   evdev = buildPythonPackage rec {
-    version = "0.4.5";
+    version = "0.4.6";
     name = "evdev-${version}";
     disabled = isPy34;  # see http://bugs.python.org/issue21121
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/e/evdev/${name}.tar.gz";
-      sha256 = "0w8ib3ab4mpfc1rvd335l8xkd41qbh3iyb0vfiiapgcfvqk74aq7";
+      sha256 = "08bzyr3zc8ijnv25bysmmvzircblh42ja15f6ijdzmqqw8vfaij8";
     };
 
     buildInputs = with self; [ pkgs.linuxHeaders ];
@@ -2625,6 +2625,33 @@ let
     };
   };
 
+  poppler-qt4 = buildPythonPackage rec {
+    name = "poppler-qt4-${version}";
+    version = "0.18.1";
+    disabled = isPy3k || isPyPy;
+    
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/p/python-poppler-qt4/" +
+            "python-poppler-qt4-${version}.tar.gz";
+      md5 = "9c4c5a59b878aed78e96a6ae58c6c185";
+    };
+
+    propagatedBuildInputs = [ pkgs.pyqt4 pkgs.sip pkgs.pkgconfig pkgs.popplerQt4 ];
+
+    preBuild = "${python}/bin/${python.executable} setup.py build_ext" +
+               " --include-dirs=${pkgs.popplerQt4}/include/poppler/";
+
+    meta = with stdenv.lib; {
+      description = "A Python binding to Poppler-Qt4";
+      longDescription = ''
+        A Python binding to Poppler-Qt4 that aims for completeness
+        and for being actively maintained.
+      '';
+      license = licenses.lgpl21Plus;
+      maintainers = [ maintainers.sepi ];
+      platforms = platforms.all;
+    };
+  };
 
   pudb = buildPythonPackage rec {
     name = "pudb-2013.3.6";
@@ -9488,8 +9515,22 @@ let
     ] ++ optional isPy26 argparse;
 
     patchPhase = ''
-      substituteInPlace "virtualenvwrapper.sh" --replace "which" "${pkgs.which}/bin/which"
-      substituteInPlace "virtualenvwrapper_lazy.sh" --replace "which" "${pkgs.which}/bin/which"
+      for file in "virtualenvwrapper.sh" "virtualenvwrapper_lazy.sh"; do
+        substituteInPlace "$file" --replace "which" "${pkgs.which}/bin/which"
+
+        # We can't set PYTHONPATH in a normal way (like exporting in a wrapper
+        # script) because the user has to evaluate the script and we don't want
+        # modify the global PYTHONPATH which would affect the user's
+        # environment.
+        # Furthermore it isn't possible to just use VIRTUALENVWRAPPER_PYTHON
+        # for this workaround, because this variable is well quoted inside the
+        # shell script.
+        # (the trailing " -" is required to only replace things like these one:
+        # "$VIRTUALENVWRAPPER_PYTHON" -c "import os,[...] and not in
+        # if-statements or anything like that.
+        # ...and yes, this "patch" is hacky :)
+        substituteInPlace "$file" --replace '"$VIRTUALENVWRAPPER_PYTHON" -' 'env PYTHONPATH="$VIRTUALENVWRAPPER_PYTHONPATH" "$VIRTUALENVWRAPPER_PYTHON" -'
+      done
     '';
 
     postInstall = ''
@@ -9503,8 +9544,8 @@ let
         mv "$wrapper" "$wrapped"
 
         cat > "$wrapper" <<- EOF
-	export PATH=$PATH:\$PATH
-	export PYTHONPATH=$PYTHONPATH:$(toPythonPath $out):\$PYTHONPATH
+	export PATH="$PATH:\$PATH"
+	export VIRTUALENVWRAPPER_PYTHONPATH="$PYTHONPATH:$(toPythonPath $out)"
 	source "$wrapped"
 	EOF
 
