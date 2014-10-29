@@ -1177,6 +1177,8 @@ let
 
   freetds = callPackage ../development/libraries/freetds { };
 
+  frescobaldi = callPackage ../misc/frescobaldi {};
+  
   ftgl = callPackage ../development/libraries/ftgl { };
 
   ftgl212 = callPackage ../development/libraries/ftgl/2.1.2.nix { };
@@ -1629,6 +1631,8 @@ let
 
   man_db = callPackage ../tools/misc/man-db { };
 
+  mbox = callPackage ../tools/security/mbox { };
+
   memtest86 = callPackage ../tools/misc/memtest86 { };
 
   memtest86plus = callPackage ../tools/misc/memtest86+ { };
@@ -1923,6 +1927,8 @@ let
 
   openvpn_learnaddress = callPackage ../tools/networking/openvpn/openvpn_learnaddress.nix { };
 
+  update-resolv-conf = callPackage ../tools/networking/openvpn/update-resolv-conf.nix { };
+
   openvswitch = callPackage ../os-specific/linux/openvswitch { };
 
   optipng = callPackage ../tools/graphics/optipng {
@@ -2000,6 +2006,10 @@ let
   pdfread = callPackage ../tools/graphics/pdfread { };
 
   briss = callPackage ../tools/graphics/briss { };
+ 
+  brickd = callPackage ../servers/brickd { 
+    libusb = libusb1; 
+  };
 
   bully = callPackage ../tools/networking/bully { };
 
@@ -2175,6 +2185,11 @@ let
     # GNU Inetutils.  The latter is more portable.
     logger = inetutils;
   };
+  rsnapshotGit = lowPrio (callPackage ../tools/backup/rsnapshot/git.nix {
+    # For the `logger' command, we can use either `utillinux' or
+    # GNU Inetutils.  The latter is more portable.
+    logger = inetutils;
+  });
 
   rlwrap = callPackage ../tools/misc/rlwrap { };
 
@@ -2818,7 +2833,17 @@ let
 
   bigloo = callPackage ../development/compilers/bigloo { };
 
-  chicken = callPackage ../development/compilers/chicken { };
+  fetchegg = callPackage ../build-support/fetchegg { };
+
+  eggDerivation = callPackage ../development/compilers/chicken/eggDerivation.nix { };
+
+  chicken = callPackage ../development/compilers/chicken {
+    bootstrap-chicken = chicken.override { bootstrap-chicken = null; }; 
+  };
+
+  egg2nix = callPackage ../development/tools/egg2nix {
+    chickenEggs = callPackage ../development/tools/egg2nix/chicken-eggs.nix { };
+  };
 
   ccl = builderDefsPackage ../development/compilers/ccl {};
 
@@ -3303,11 +3328,15 @@ let
 
   oraclejdk7 = pkgs.oraclejdk7distro true false;
 
+  oraclejdk7psu = pkgs.oraclejdk7psu_distro true false;
+
   oraclejdk8 = pkgs.oraclejdk8distro true false;
 
   oraclejre = lowPrio (pkgs.jdkdistro false false);
 
   oraclejre7 = lowPrio (pkgs.oraclejdk7distro false false);
+
+  oraclejre7psu = lowPrio (pkgs.oraclejdk7psu_distro false false);
 
   oraclejre8 = lowPrio (pkgs.oraclejdk8distro false false);
 
@@ -3326,6 +3355,11 @@ let
     assert supportsJDK;
     (if pluginSupport then appendToName "with-plugin" else x: x)
       (callPackage ../development/compilers/oraclejdk/jdk7-linux.nix { inherit installjdk; });
+
+  oraclejdk7psu_distro = installjdk: pluginSupport:
+    assert supportsJDK;
+    (if pluginSupport then appendToName "with-plugin" else x: x)
+      (callPackage ../development/compilers/oraclejdk/jdk7psu-linux.nix { inherit installjdk; });
 
   oraclejdk8distro = installjdk: pluginSupport:
     assert supportsJDK;
@@ -3450,6 +3484,12 @@ let
     in rec {
     inherit ocaml;
 
+    acgtk = callPackage ../applications/science/logic/acgtk { };
+
+    ansiterminal = callPackage ../development/ocaml-modules/ansiterminal { };
+
+    bolt = callPackage ../development/ocaml-modules/bolt { };
+
     camlidl = callPackage ../development/tools/ocaml/camlidl { };
 
     camlp4 =
@@ -3506,6 +3546,8 @@ let
     deriving = callPackage ../development/tools/ocaml/deriving { };
 
     easy-format = callPackage ../development/ocaml-modules/easy-format { };
+
+    eff = callPackage ../development/interpreters/eff { };
 
     eliom = callPackage ../development/ocaml-modules/eliom { };
 
@@ -3598,6 +3640,10 @@ let
     ocaml_ssl = callPackage ../development/ocaml-modules/ssl { };
 
     ocaml_text = callPackage ../development/ocaml-modules/ocaml-text { };
+
+    ocpBuild = callPackage ../development/tools/ocaml/ocp-build { };
+
+    ocpIndent = callPackage ../development/tools/ocaml/ocp-indent { };
 
     ocsigen_server = callPackage ../development/ocaml-modules/ocsigen-server { };
 
@@ -7342,7 +7388,9 @@ let
 
   mailman = callPackage ../servers/mail/mailman { };
 
-  mediatomb = callPackage ../servers/mediatomb { };
+  mediatomb = callPackage ../servers/mediatomb {
+    spidermonkey = spidermonkey_185;
+  };
 
   memcached = callPackage ../servers/memcached {};
 
@@ -8886,6 +8934,8 @@ let
   chromiumBeta = lowPrio (chromium.override { channel = "beta"; });
 
   chromiumDev = lowPrio (chromium.override { channel = "dev"; });
+
+  chuck = callPackage ../applications/audio/chuck { };
 
   cinelerra = callPackage ../applications/video/cinelerra { };
 
@@ -10771,6 +10821,7 @@ let
       ++ optional (cfg.enableFceumm or false) fceumm
       ++ optional (cfg.enableGambatte or false) gambatte
       ++ optional (cfg.enableGenesisPlusGX or false) genesis-plus-gx
+      ++ optional (cfg.enableMednafenPCEFast or false) mednafen-pce-fast
       ++ optional (cfg.enableMupen64Plus or false) mupen64plus
       ++ optional (cfg.enableNestopia or false) nestopia
       ++ optional (cfg.enablePicodrive or false) picodrive
@@ -10905,6 +10956,27 @@ let
   };
 
   xkb_switch = callPackage ../tools/X11/xkb-switch { };
+
+  xmonad_log_applet_gnome2 = callPackage ../applications/window-managers/xmonad-log-applet {
+    desktopSupport = "gnome2";
+    inherit (xfce) libxfce4util xfce4panel;
+    gnome2_panel = gnome2.gnome_panel;
+    GConf2 = gnome2.GConf;
+  };
+
+  xmonad_log_applet_gnome3 = callPackage ../applications/window-managers/xmonad-log-applet {
+    desktopSupport = "gnome3";
+    inherit (xfce) libxfce4util xfce4panel;
+    gnome2_panel = gnome2.gnome_panel;
+    GConf2 = gnome2.GConf;
+  };
+
+  xmonad_log_applet_xfce = callPackage ../applications/window-managers/xmonad-log-applet {
+    desktopSupport = "xfce4";
+    inherit (xfce) libxfce4util xfce4panel;
+    gnome2_panel = gnome2.gnome_panel;
+    GConf2 = gnome2.GConf;
+  };
 
   libxpdf = callPackage ../applications/misc/xpdf/libxpdf.nix { };
 
@@ -11519,27 +11591,46 @@ let
 
       qtcurve = callPackage ../misc/themes/qtcurve { };
 
-      quassel = callPackage ../applications/networking/irc/quassel { dconf = gnome3.dconf; };
+      quassel = callPackage ../applications/networking/irc/quassel rec {
+        monolithic = true;
+        daemon = false;
+        client = false;
+        withKDE = stdenv.isLinux;
+        qt = if withKDE then qt4 else qt5; # KDE supported quassel cannot build with qt5 yet (maybe in 0.12.0)
+        dconf = gnome3.dconf;
+      };
 
       quasselWithoutKDE = (self.quassel.override {
+        monolithic = true;
+        daemon = false;
+        client = false;
         withKDE = false;
+        qt = qt5;
         tag = "-without-kde";
       });
 
       quasselDaemon = (self.quassel.override {
         monolithic = false;
         daemon = true;
+        client = false;
+        withKDE = false;
+        qt = qt5;
         tag = "-daemon";
       });
 
       quasselClient = (self.quassel.override {
         monolithic = false;
+        daemon = false;
         client = true;
         tag = "-client";
       });
 
       quasselClientWithoutKDE = (self.quasselClient.override {
+        monolithic = false;
+        daemon = false;
+        client = true;
         withKDE = false;
+        qt = qt5;
         tag = "-client-without-kde";
       });
 

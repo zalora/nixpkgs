@@ -271,6 +271,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   bitsExtras = callPackage ../development/libraries/haskell/bits-extras {};
 
+  bitset = callPackage ../development/libraries/haskell/bitset {};
+
   bktrees = callPackage ../development/libraries/haskell/bktrees {};
 
   blankCanvas = callPackage ../development/libraries/haskell/blank-canvas {};
@@ -914,6 +916,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
     cabal = self.cabal.override { enableLibraryProfiling = false; }; # pkg cannot be built with profiling enabled
   };
 
+  ghcid = callPackage ../development/tools/haskell/ghcid {};
 
   ghcServer = callPackage ../development/libraries/haskell/ghc-server {};
 
@@ -1278,6 +1281,18 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   hsBibutils = callPackage ../development/libraries/haskell/hs-bibutils {};
 
   hsc3 = callPackage ../development/libraries/haskell/hsc3 {};
+
+  hsc3-dot = callPackage ../development/libraries/haskell/hsc3-dot {};
+
+  hsc3-process = callPackage ../development/libraries/haskell/hsc3-process {};
+
+  hsc3-db = callPackage ../development/libraries/haskell/hsc3-db {};
+
+  hsc3-lang = callPackage ../development/libraries/haskell/hsc3-lang {
+    hmatrixSpecial = self.hmatrixSpecial.override {
+      hmatrix = self.hmatrix.override { binary = self.binary_0_7_2_2; };
+    };
+  };
 
   hsdns = callPackage ../development/libraries/haskell/hsdns {};
 
@@ -1969,6 +1984,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   pipesSafe = callPackage ../development/libraries/haskell/pipes-safe {};
 
+  pipesShell = callPackage ../development/libraries/haskell/pipes-shell {};
+
   pipesText = callPackage ../development/libraries/haskell/pipes-text {};
 
   pipesZlib = callPackage ../development/libraries/haskell/pipes-zlib {};
@@ -2107,6 +2124,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   ranges = callPackage ../development/libraries/haskell/ranges {};
 
   Rasterific = callPackage ../development/libraries/haskell/Rasterific {};
+
+  rawStringsQq = callPackage ../development/libraries/haskell/rawStringsQq {};
 
   reserve = callPackage ../development/libraries/haskell/reserve {};
 
@@ -3085,12 +3104,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   arbtt = callPackage ../applications/misc/arbtt {};
 
-  idris_plain = callPackage ../development/compilers/idris {
-    llvmGeneral = self.llvmGeneral_3_3_8_2;
-    llvmGeneralPure = self.llvmGeneralPure_3_3_8_2;
-    languageJava = self.languageJava_0_2_6;
-    optparseApplicative = self.optparseApplicative_0_10_0;
-  };
+  idris_plain = callPackage ../development/compilers/idris {};
 
   idris = callPackage ../development/compilers/idris/wrapper.nix {};
 
@@ -3165,13 +3179,13 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
       LANG = "en_US.UTF-8";
       LOCALE_ARCHIVE = "${nativePkgs.glibcLocales}/lib/locale/locale-archive";
     });
-  in callPackage cabalExpr {
+  in callPackage cabalExpr ({
     cabal = self.cabal.override {
       extension = eself: esuper: {
         buildDepends = [ self.cabalInstall ] ++ esuper.buildDepends;
       } // cabalDrvArgs;
     };
-  };
+  } // args);
 
   buildLocalCabal = src: name: self.buildLocalCabalWithArgs { inherit src name; };
 
