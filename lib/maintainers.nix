@@ -5,12 +5,12 @@
      alphabetically sorted.  */
 
   _1126 = "Christian Lask <mail@elfsechsundzwanzig.de>";
+  abbradar = "Nikolay Amiantov <ab@fmap.me>";
   aforemny = "Alexander Foremny <alexanderforemny@googlemail.com>";
   ak = "Alexander Kjeldaas <ak@formalprivacy.com>";
   akc = "Anders Claesson <akc@akc.is>";
   algorith = "Dries Van Daele <dries_van_daele@telenet.be>";
   all = "Nix Committers <nix-commits@lists.science.uu.nl>";
-  abbradar = "Nikolay Amiantov <ab@fmap.me>";
   amiddelk = "Arie Middelkoop <amiddelk@gmail.com>";
   amorsillo = "Andrew Morsillo <andrew.morsillo@gmail.com>";
   AndersonTorres = "Anderson Torres <torres.anderson.85@gmail.com>";
@@ -23,6 +23,7 @@
   aszlig = "aszlig <aszlig@redmoonstudios.org>";
   auntie = "Jonathan Glines <auntieNeo@gmail.com>";
   aycanirican = "Aycan iRiCAN <iricanaycan@gmail.com>";
+  balajisivaraman = "Balaji Sivaraman<sivaraman.balaji@gmail.com>";
   bbenoist = "Baptist BENOIST <return_0@live.com>";
   bennofs = "Benno Fünfstück <benno.fuenfstueck@gmail.com>";
   berdario = "Dario Bertini <berdario@gmail.com>";
@@ -45,8 +46,8 @@
   coroa = "Jonas Hörsch <jonas@chaoflow.net>";
   cstrahan = "Charles Strahan <charles.c.strahan@gmail.com>";
   DamienCassou = "Damien Cassou <damien.cassou@gmail.com>";
-  DerGuteMoritz = "Moritz Heidkamp <moritz@twoticketsplease.de>";
   dbohdan = "Danyil Bohdan <danyil.bohdan@gmail.com>";
+  DerGuteMoritz = "Moritz Heidkamp <moritz@twoticketsplease.de>";
   dmalikov = "Dmitry Malikov <malikov.d.y@gmail.com>";
   doublec = "Chris Double <chris.double@double.co.nz>";
   ederoyd46 = "Matthew Brown <matt@ederoyd.co.uk>";
@@ -103,6 +104,7 @@
   offline = "Jaka Hudoklin <jakahudoklin@gmail.com>";
   orbitz = "Malcolm Matalka <mmatalka@gmail.com>";
   page = "Carles Pagès <page@cubata.homelinux.net>";
+  pashev = "Igor Pashev <pashev.igor@gmail.com>";
   phreedom = "Evgeny Egorochkin <phreedom@yandex.ru>";
   pierron = "Nicolas B. Pierron <nixos@nbp.name>";
   piotr = "Piotr Pietraszkiewicz <ppietrasa@gmail.com>";
@@ -123,6 +125,7 @@
   rszibele = "Richard Szibele <richard_szibele@hotmail.com>";
   rycee = "Robert Helgesson <robert@rycee.net>";
   sander = "Sander van der Burg <s.vanderburg@tudelft.nl>";
+  schristo = "Scott Christopher <schristopher@konputa.com>";
   sepi = "Raffael Mancini <raffael@mancini.lu>";
   shell = "Shell Turner <cam.turn@gmail.com>";
   shlevy = "Shea Levy <shea@shealevy.com>";
@@ -138,6 +141,7 @@
   tstrobel = "Thomas Strobel <ts468@cam.ac.uk>";
   ttuegel = "Thomas Tuegel <ttuegel@gmail.com>";
   tv = "Tomislav Viljetić <tv@shackspace.de>";
+  twey = "James ‘Twey’ Kay <twey@twey.co.uk>";
   urkud = "Yury G. Kudryashov <urkud+nix@ya.ru>";
   vandenoever = "Jos van den Oever <jos@vandenoever.info>";
   vbgl = "Vincent Laporte <Vincent.Laporte@gmail.com>";

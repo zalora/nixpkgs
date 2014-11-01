@@ -1381,6 +1381,8 @@ let
 
   pigz = callPackage ../tools/compression/pigz { };
 
+  pxz = callPackage ../tools/compression/pxz { };
+
   haproxy = callPackage ../tools/networking/haproxy { };
 
   haveged = callPackage ../tools/security/haveged { };
@@ -1434,6 +1436,8 @@ let
   idle3tools = callPackage ../tools/system/idle3tools { };
 
   iftop = callPackage ../tools/networking/iftop { };
+
+  ifuse = callPackage ../tools/filesystems/ifuse/default.nix { };
 
   ihaskell = callPackage ../development/tools/haskell/ihaskell/wrapper.nix {
     inherit (pythonPackages) ipython;
@@ -3530,14 +3534,18 @@ let
     camomile_0_8_2 = callPackage ../development/ocaml-modules/camomile/0.8.2.nix { };
     camomile = callPackage ../development/ocaml-modules/camomile { };
 
-    camlimages = callPackage ../development/ocaml-modules/camlimages {
+    camlimages_4_0 = callPackage ../development/ocaml-modules/camlimages/4.0.nix {
       libpng = libpng12;
       giflib = giflib_4_1;
     };
+    camlimages_4_1 = callPackage ../development/ocaml-modules/camlimages/4.1.nix {};
+    camlimages = camlimages_4_1;
 
     biniou = callPackage ../development/ocaml-modules/biniou { };
 
     ocaml_cairo = callPackage ../development/ocaml-modules/ocaml-cairo { };
+
+    ocaml_cairo2 = callPackage ../development/ocaml-modules/ocaml-cairo2 { };
 
     cmdliner = callPackage ../development/ocaml-modules/cmdliner { };
 
@@ -3716,7 +3724,8 @@ let
   // { lablgtk = ocamlPackages_3_10_0.lablgtk_2_14; };
   ocamlPackages_3_11_2 = (mkOcamlPackages ocaml_3_11_2 pkgs.ocamlPackages_3_11_2)
   // { lablgtk = ocamlPackages_3_11_2.lablgtk_2_14; };
-  ocamlPackages_3_12_1 = mkOcamlPackages ocaml_3_12_1 pkgs.ocamlPackages_3_12_1;
+  ocamlPackages_3_12_1 = (mkOcamlPackages ocaml_3_12_1 pkgs.ocamlPackages_3_12_1)
+  // { camlimages = ocamlPackages_3_12_1.camlimages_4_0; };
   ocamlPackages_4_00_1 = mkOcamlPackages ocaml_4_00_1 pkgs.ocamlPackages_4_00_1;
   ocamlPackages_4_01_0 = mkOcamlPackages ocaml_4_01_0 pkgs.ocamlPackages_4_01_0;
   ocamlPackages_4_02_0 = mkOcamlPackages ocaml_4_02_0 pkgs.ocamlPackages_4_02_0;
@@ -4194,6 +4203,8 @@ let
   guile_lib = callPackage ../development/guile-modules/guile-lib { };
 
   guile_ncurses = callPackage ../development/guile-modules/guile-ncurses { };
+
+  guile-opengl = callPackage ../development/guile-modules/guile-opengl { };
 
   guile-xcb = callPackage ../development/guile-modules/guile-xcb { };
 
@@ -5189,9 +5200,10 @@ let
   glpk = callPackage ../development/libraries/glpk { };
 
   glsurf = callPackage ../applications/science/math/glsurf {
-    inherit (ocamlPackages) lablgl findlib camlimages ocaml_mysql mlgmp;
+    inherit (ocamlPackages) lablgl findlib ocaml_mysql mlgmp;
     libpng = libpng12;
     giflib = giflib_4_1;
+    camlimages = ocamlPackages.camlimages_4_0;
   };
 
   gmime = callPackage ../development/libraries/gmime { };
@@ -7532,7 +7544,9 @@ let
 
   postgresql93 = callPackage ../servers/sql/postgresql/9.3.x.nix { };
 
-  postgresql94 = callPackage ../servers/sql/postgresql/9.4.x.nix { };
+  postgresql94beta2 = callPackage ../servers/sql/postgresql/9.4beta2.nix { };
+  postgresql94beta3 = callPackage ../servers/sql/postgresql/9.4beta3.nix { };
+  postgresql94 = postgresql94beta3;
 
   postgresql_jdbc = callPackage ../servers/sql/postgresql/jdbc { };
 
@@ -8656,6 +8670,8 @@ let
 
   manpages = callPackage ../data/documentation/man-pages { };
 
+  meslo-lg = callPackage ../data/fonts/meslo-lg {};
+
   miscfiles = callPackage ../data/misc/miscfiles { };
 
   mobile_broadband_provider_info = callPackage ../data/misc/mobile-broadband-provider-info { };
@@ -9587,7 +9603,9 @@ let
 
   gqview = callPackage ../applications/graphics/gqview { };
 
-  gmpc = callPackage ../applications/audio/gmpc { };
+  gmpc = callPackage ../applications/audio/gmpc {
+    inherit (xlibs) libSM libICE;
+  };
 
   gmtk = callPackage ../applications/networking/browsers/mozilla-plugins/gmtk {
     inherit (gnome) GConf;
@@ -9945,7 +9963,9 @@ let
     inherit (xlibs) libX11 xproto;
   };
 
-  easytag = callPackage ../applications/audio/easytag { };
+  easytag = callPackage ../applications/audio/easytag {
+    inherit (gnome3) gnome_icon_theme;
+  };
 
   mp3info = callPackage ../applications/audio/mp3info { };
 
@@ -10193,6 +10213,7 @@ let
     gnutls = if config.pidgin.gnutls or false then gnutls else null;
     libgcrypt = if config.pidgin.gnutls or false then libgcrypt else null;
     startupnotification = libstartup_notification;
+    inherit (xlibs) libXext libICE libSM;
   };
 
   pidgin-with-plugins = callPackage ../applications/networking/instant-messengers/pidgin/wrapper.nix {
@@ -10458,8 +10479,9 @@ let
 
   stp = callPackage ../applications/science/logic/stp {};
 
-  stumpwm = callPackage ../applications/window-managers/stumpwm {};
-  stumpwmContrib = callPackage ../applications/window-managers/stumpwm/contrib.nix {};
+  stumpwm = callPackage ../applications/window-managers/stumpwm {
+    stumpwmContrib = callPackage ../applications/window-managers/stumpwm/contrib.nix { };
+  };
 
   sublime = callPackage ../applications/editors/sublime { };
 
@@ -11615,7 +11637,7 @@ let
         daemon = false;
         client = false;
         withKDE = false;
-        qt = qt5;
+        #qt = qt5;
         tag = "-without-kde";
       });
 
@@ -11624,7 +11646,7 @@ let
         daemon = true;
         client = false;
         withKDE = false;
-        qt = qt5;
+        #qt = qt5;
         tag = "-daemon";
       });
 
@@ -11640,7 +11662,7 @@ let
         daemon = false;
         client = true;
         withKDE = false;
-        qt = qt5;
+        #qt = qt5;
         tag = "-client-without-kde";
       });
 
@@ -11693,7 +11715,7 @@ let
   mate-themes = callPackage ../misc/themes/mate-themes { };
 
   xfce = xfce4_10;
-  xfce4_10 = recurseIntoAttrs (import ../desktops/xfce { inherit pkgs newScope; });
+  xfce4_10 = recurseIntoAttrs (import ../desktops/xfce { inherit config pkgs newScope; });
 
 
   ### SCIENCE

@@ -1010,7 +1010,6 @@ let
     };
   };
 
-
   botocore = buildPythonPackage rec {
     version = "0.67.0";
     name = "botocore-${version}";
@@ -1595,6 +1594,19 @@ let
       description = "plugin core for use by pytest-cov, nose-cov and nose2-cov";
     };
     propagatedBuildInputs = with self; [ self.coverage ];
+  };
+
+  crcmod = buildPythonPackage rec {
+    name = "crcmod-1.7";
+    src = pkgs.fetchurl {
+      url = https://pypi.python.org/packages/source/c/crcmod/crcmod-1.7.tar.gz;
+      sha256 = "07k0hgr42vw2j92cln3klxka81f33knd7459cn3d8aszvfh52w6w";
+    };
+    meta = {
+      description = "Python module for generating objects that compute the Cyclic Redundancy Check (CRC)";
+      homepage = http://crcmod.sourceforge.net/;
+      license = stdenv.lib.licenses.mit;
+    };
   };
 
   cython = buildPythonPackage rec {
@@ -2629,7 +2641,7 @@ let
     name = "poppler-qt4-${version}";
     version = "0.18.1";
     disabled = isPy3k || isPyPy;
-    
+
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/p/python-poppler-qt4/" +
             "python-poppler-qt4-${version}.tar.gz";
@@ -6541,6 +6553,40 @@ let
     };
   });
 
+  pybfd = buildPythonPackage rec {
+    name = "pybfd-0.1.1";
+
+    disabled = isPyPy || isPy3k;
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/p/pybfd/${name}.tar.gz";
+      md5 = "79dd6e12c90ad0515d0ad7fb1bd2f571";
+    };
+
+    preConfigure = ''
+      substituteInPlace setup.py \
+        --replace '"/usr/include"' '"${pkgs.gdb}/include"' \
+        --replace '"/usr/lib"' '"${pkgs.binutils}/lib"'
+    '';
+
+    # --old-and-unmanageable not supported by this setup.py
+    installPhase = ''
+      mkdir -p "$out/lib/${python.libPrefix}/site-packages"
+
+      export PYTHONPATH="$out/lib/${python.libPrefix}/site-packages:$PYTHONPATH"
+
+      ${python}/bin/${python.executable} setup.py install \
+        --install-lib=$out/lib/${python.libPrefix}/site-packages \
+        --prefix="$out"
+    '';
+
+    meta = with stdenv.lib; {
+      homepage = https://github.com/Groundworkstech/pybfd;
+      description = "A Python interface to the GNU Binary File Descriptor (BFD) library";
+      license = licenses.gpl2;
+      platforms = platforms.linux;
+    };
+  };
 
   pyblock = stdenv.mkDerivation rec {
     name = "pyblock-${version}";
@@ -7632,6 +7678,17 @@ let
     };
   };
 
+  retry_decorator = buildPythonPackage rec {
+    name = "retry_decorator-1.0.0";
+    src = pkgs.fetchurl {
+      url = https://pypi.python.org/packages/source/r/retry_decorator/retry_decorator-1.0.0.tar.gz;
+      sha256 = "086zahyb6yn7ggpc58909c5r5h3jz321i1694l1c28bbpaxnlk88";
+    };
+    meta = {
+      homepage = https://github.com/pnpnpn/retry-decorator;
+      license = stdenv.lib.licenses.mit;
+    };
+  };
 
   quantities = buildPythonPackage rec {
     name = "quantities-0.10.1";
@@ -8611,6 +8668,19 @@ let
     };
   };
 
+  socksipy-branch = buildPythonPackage rec {
+    name = "SocksiPy-branch-1.01";
+    src = pkgs.fetchurl {
+      url = https://pypi.python.org/packages/source/S/SocksiPy-branch/SocksiPy-branch-1.01.tar.gz;
+      sha256 = "01l41v4g7fy9fzvinmjxy6zcbhgqaif8dhdqm4w90fwcw9h51a8p";
+    };
+    meta = {
+      homepage = http://code.google.com/p/socksipy-branch/;
+      description = "This Python module allows you to create TCP connections through a SOCKS proxy without any special effort";
+      license = stdenv.lib.licenses.bsd3;
+    };
+  };
+
   sorl_thumbnail = buildPythonPackage rec {
     name = "sorl-thumbnail-11.12";
 
@@ -8661,6 +8731,8 @@ let
     };
 
     buildInputs = [ pkgs.bash ];
+
+    doCheck = !isPyPy;
 
     preConfigure = ''
       substituteInPlace test_subprocess32.py \
@@ -11038,7 +11110,7 @@ let
 
     buildInputs = with self; [ nose mock ];
     propagatedBuildInputs = with self; [
-      jinja2 pyyaml redis requests pagerduty 
+      jinja2 pyyaml redis requests pagerduty
       python_simple_hipchat pushbullet
     ];
 
@@ -11436,6 +11508,52 @@ let
   with self;
 
 {
+  boto-230 = buildPythonPackage rec {
+    name = "boto-2.30.0";
+    src = pkgs.fetchurl {
+      url = https://pypi.python.org/packages/source/b/boto/boto-2.30.0.tar.gz;
+      sha256 = "12gl8azmx1vv8dbv9jhnsbhjpc2dd1ng0jlbcg734k6ggwq1h6hh";
+    };
+    doCheck = false;
+    meta = {
+      homepage = https://github.com/boto/boto;
+      license = licenses.mit;
+      description = "Python interface to Amazon Web Services";
+    };
+  };
+
+  gcs-oauth2-boto-plugin = buildPythonPackage rec {
+    name = "gcs-oauth2-boto-plugin-1.8";
+    src = pkgs.fetchurl {
+      url = https://pypi.python.org/packages/source/g/gcs-oauth2-boto-plugin/gcs-oauth2-boto-plugin-1.8.tar.gz;
+      sha256 = "0jy62y5bmaf1mb735lqwry1s5nx2qqrxvl5sxip9yg4miih3qkyb";
+    };
+    propagatedBuildInputs = with self; [ boto-230 httplib2 google_api_python_client retry_decorator pkgs.pyopenssl socksipy-branch ];
+    meta = {
+      homepage = https://developers.google.com/storage/docs/gspythonlibrary;
+      description = "Provides OAuth 2.0 credentials that can be used with Google Cloud Storage";
+      license = stdenv.lib.licenses.asl20;
+    };
+  };
+
+  gsutil = buildPythonPackage rec {
+    name = "gsutil-4.6";
+    meta = {
+      homepage = https://developers.google.com/storage/docs/gsutil;
+      description = "Google Cloud Storage Tool";
+      maintainers = [ "Russell O'Connor <oconnorr@google.com>" ];
+      license = stdenv.lib.licenses.asl20;
+    };
+    doCheck = false;
+
+    src = pkgs.fetchurl {
+      url = https://pypi.python.org/packages/source/g/gsutil/gsutil-4.6.tar.gz;
+      sha256 = "1i0clm60162rbk45ljr8nsw4ndkzjnwb7r440shcqjrvw8jq49mn";
+    };
+
+    propagatedBuildInputs = with self; [ boto-230 crcmod httplib2 gcs-oauth2-boto-plugin google_api_python_client gflags
+                                         retry_decorator pkgs.pyopenssl socksipy-branch ];
+  };
 
   pypi2nix = self.buildPythonPackage rec {
     rev = "04a68d8577acbceb88bdf51b1231a9dbdead7003";
@@ -11549,16 +11667,16 @@ let
   };
 
   weboob = buildPythonPackage rec {
-    name = "weboob-0.j";
+    name = "weboob-1.0";
 
     src = pkgs.fetchurl {
-      url = "https://symlink.me/attachments/download/271/${name}.tar.gz";
-      md5 = "9e11b1f376ccb87d35995ec87bba5b38";
+      url = "https://symlink.me/attachments/download/289/${name}.tar.gz";
+      md5 = "38f832f1b8654441adafe8558faa7109";
     };
 
     setupPyBuildFlags = ["--qt" "--xdg"];
 
-    propagatedBuildInputs = with self; [ pillow prettytable pyyaml dateutil gdata requests2 mechanize feedparser lxml pkgs.gnupg pyqt4 pkgs.libyaml simplejson cssselect ];
+    propagatedBuildInputs = with self; [ pillow prettytable pyyaml dateutil gdata requests2 mechanize feedparser lxml pkgs.gnupg pyqt4 pkgs.libyaml simplejson cssselect futures ];
 
     meta = {
       homepage = http://weboob.org;
@@ -11567,4 +11685,37 @@ let
       maintainers = [ stdenv.lib.maintainers.DamienCassou ];
     };
   };
+
+  datadiff = buildPythonPackage rec {
+    name = "datadiff-1.1.6";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/d/datadiff/datadiff-1.1.6.zip";
+      md5 = "c34a690db75eead148aa5fa89e575d1e";
+    };
+
+    buildInputs = with self; [ nose ];
+
+    meta = with stdenv.lib; {
+      description = "DataDiff";
+      homepage = http://sourceforge.net/projects/datadiff/;
+      license = licenses.asl20;
+    };
+  };
+
+  termcolor = buildPythonPackage rec {
+    name = "termcolor-1.1.0";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/t/termcolor/termcolor-1.1.0.tar.gz";
+      md5 = "043e89644f8909d462fbbfa511c768df";
+    };
+
+    meta = with stdenv.lib; {
+      description = "Termcolor";
+      homepage = http://pypi.python.org/pypi/termcolor;
+      license = licenses.mit;
+    };
+  };
+
 }); in pythonPackages
