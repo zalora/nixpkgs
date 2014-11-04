@@ -980,12 +980,12 @@ let
 
 
   botocore = buildPythonPackage rec {
-    version = "0.33.0";
+    version = "0.69.0";
     name = "botocore-${version}";
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/b/botocore/${name}.tar.gz";
-      md5 = "6743c73a2e148abaa9c487a6e2ee53a3";
+      md5 = "b71fe35ee01e636b54de28f1f875f084";
     };
 
     propagatedBuildInputs =
