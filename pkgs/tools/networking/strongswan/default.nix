@@ -14,11 +14,13 @@ stdenv.mkDerivation rec {
 
   configureFlags = [ "--enable-swanctl" "--enable-cmd" ];
 
+  NIX_LDFLAGS = "-lgcc_s" ;
+
   meta = {
     maintainers = [ stdenv.lib.maintainers.shlevy ];
     description = "OpenSource IPsec-based VPN Solution";
     homepage = https://www.strongswan.org;
     license = stdenv.lib.licenses.gpl2Plus;
-    inherit (stdenv.gcc.clang.meta) platforms;
+    inherit (stdenv.gcc.gcc.meta) platforms;
   };
 }

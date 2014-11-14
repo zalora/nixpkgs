@@ -63,7 +63,7 @@ let self = _self // overrides; _self = with self; {
   RcppArmadillo = buildRPackage {
     name = "RcppArmadillo-0.4.500.0";
     src = fetchurl {
-      url = "mirror://cran/src/contrib/RcppArmadillo_0.4.320.0.tar.gz";
+      url = "mirror://cran/src/contrib/RcppArmadillo_0.4.500.0.tar.gz";
       sha256="1fi6wvs4f0sb1lxpimly1i3hl3pjzwgvh4izmb9v7wm12c068kka";
     };
     propagatedBuildInputs = [Rcpp];
@@ -1140,6 +1140,7 @@ let self = _self // overrides; _self = with self; {
   DeducerText = derive { name="DeducerText"; version="0.1-2"; sha256="0if2p9j74wa5rva4iv0i8iax22grl9j7lqcqzqlywjgqwnlzxa05"; depends=[Deducer tm wordcloud RColorBrewer SnowballC]; };
   deducorrect = derive { name="deducorrect"; version="1.3-5"; sha256="06lcqnay36fgkzvgbiq7b67r9lfgll3lxfr1pmx14vmivshb6mmm"; depends=[editrules]; };
   deepnet = derive { name="deepnet"; version="0.2"; sha256="09crwiq12wzwvdp3yxhc40vdh7hsnm4smqamnk4i6hli11ca90h4"; depends=[]; };
+  Defaults = derive { name="Defaults"; version="1.1-1"; sha256="0ikgd5mswlky327pzp09cz93bn3mq7qnybq1r64y19c2brbax00d"; depends=[]; };
   degenes = derive { name="degenes"; version="1.1"; sha256="1xxn5j06qizywimrp1pl8z3yjdy1a167b9jnm77gmv87rp6j240c"; depends=[]; };
   degreenet = derive { name="degreenet"; version="1.2"; sha256="07b6phgyydfp8jwjvrqcvcx3b2qhbkr44xkcn20ya1igsbyh6kzz"; depends=[]; };
   Delaporte = derive { name="Delaporte"; version="2.2-1"; sha256="09xs1gyz0wkjw0k4b5ahy7zb8xjrg610bbdvvyxkfbh9jaf8q90b"; depends=[Rcpp]; };
@@ -3441,7 +3442,7 @@ let self = _self // overrides; _self = with self; {
   nlmeODE = derive { name="nlmeODE"; version="1.1"; sha256="1zp1p98mzbfxidl87yrj2i9m21zlfp622dfnmyg8f2pyijhhn0y2"; depends=[deSolve nlme lattice]; };
   nlmeU = derive { name="nlmeU"; version="0.70-3"; sha256="05kxymgybziiijpb17bhcd9aq4awmp5km67l2py9ypakivi0hc6l"; depends=[nlme]; };
   nlmrt = derive { name="nlmrt"; version="2013-9.24"; sha256="1nqcxfgl5iplmar58015ixir2c7agdw91i0ndn2imdx0il1x2hra"; depends=[]; };
-  nloptr = derive { name="nloptr"; version="1.0.4"; sha256="1cypz91z28vhvwq2rzqjrbdc6a2lvfr2g16vid2sax618q6ai089"; depends=[]; };
+  nloptr = derive { name="nloptr"; version="1.0.4"; sha256="1cypz91z28vhvwq2rzqjrbdc6a2lvfr2g16vid2sax618q6ai089"; depends=[pkgs.nlopt]; };
   NLP = derive { name="NLP"; version="0.1-5"; sha256="1l5c21bpbbnpspxi7nmjny1k3i9q5szyxnarndb3yx7aywkvjrkj"; depends=[]; };
   NLPutils = derive { name="NLPutils"; version="0.0-1"; sha256="036pafnjcbz7ihdgsjss4jq8fb420j8fmxyymv7kr4pr78wjysbx"; depends=[NLP SnowballC qdap]; };
   nlreg = derive { name="nlreg"; version="1.2-2"; sha256="1pi7057ldiqb12kw334iavb4i92ziy1kv4amcc4d1nfsjam03jxv"; depends=[statmod survival]; };
@@ -3987,7 +3988,7 @@ let self = _self // overrides; _self = with self; {
   potts = derive { name="potts"; version="0.5-2"; sha256="1q4kvknxkrd8qbv8l3vmwrppgzq5bsysnqgm029lx7iys73x4fck"; depends=[]; };
   PottsUtils = derive { name="PottsUtils"; version="0.3-2"; sha256="05ds0a7jq63zxr3jh66a0df0idzhis76qv6inydsjk2majadj3zv"; depends=[miscF]; };
   powell = derive { name="powell"; version="1.0-0"; sha256="160i4ki3ymvq08szaxshqlz7w063493j5zqvnw6cgjmxs7y0vj8y"; depends=[]; };
-  PoweR = derive { name="PoweR"; version="1.0.3"; sha256="0mrdw2444y0gykxy5qwlrifhfclhx9jbdhx1syv1gldk06wd6z9f"; depends=[Rcpp]; };
+  PoweR = derive { name="PoweR"; version="1.0.3"; sha256="0mrdw2444y0gykxy5qwlrifhfclhx9jbdhx1syv1gldk06wd6z9f"; depends=[Rcpp RcppArmadillo]; };
   Power2Stage = derive { name="Power2Stage"; version="0.1-5"; sha256="1mpb1qx2iad4vqqxy1zxlsi0bx2cf4d98h6s7g1040hk9lpdl671"; depends=[PowerTOST]; };
   powerAnalysis = derive { name="powerAnalysis"; version="0.2"; sha256="15ff3wnn37sjkiyycgh16g7gwl3l321fbw12kv621dad5bki14jl"; depends=[]; };
   powerGWASinteraction = derive { name="powerGWASinteraction"; version="1.1.0"; sha256="08xf7dvwz2md2y8j4bjlfr5vs7y2wxssdfpkdl0h39cdrz8y1pv2"; depends=[mvtnorm pwr]; };
@@ -4331,7 +4332,9 @@ let self = _self // overrides; _self = with self; {
   RcmdrPlugin_plotByGroup = derive { name="RcmdrPlugin.plotByGroup"; version="0.1-0"; sha256="10wc7lnihsrldsynq2s0syr1aqmvfnj9rhgwh1nkk7jlrwcgj0z6"; depends=[Rcmdr lattice]; };
   RcmdrPlugin_pointG = derive { name="RcmdrPlugin.pointG"; version="0.6.6"; sha256="0sc3akbpdys353va05b40g3rq8qihw0pmhvv0kckkhsgrbr8mc07"; depends=[Rcmdr RColorBrewer]; };
   RcmdrPlugin_qual = derive { name="RcmdrPlugin.qual"; version="2.2.6"; sha256="00wznh0k909cd9vwdj1ag3224xkqnwjsad1bfkgxbszsx0w6xvy9"; depends=[Rcmdr]; };
+  /* Broken; the build goes on indefinitely, complaining about some freaky symlink problem.
   RcmdrPlugin_ROC = derive { name="RcmdrPlugin.ROC"; version="1.0-16"; sha256="1pxv0izdkqjhvmbvln6n2lhr1mamfy4q20ld6dqkldxj9bivzckb"; depends=[Rcmdr pROC ROCR ResourceSelection PredictABEL]; };
+  */
   RcmdrPlugin_sampling = derive { name="RcmdrPlugin.sampling"; version="1.1"; sha256="0fx0s63wq0si1jydl9xyj9ny7iglg91zpvkyrnc05i5pan9l3xd9"; depends=[lpSolve sampling MASS Rcmdr]; };
   RcmdrPlugin_SCDA = derive { name="RcmdrPlugin.SCDA"; version="1.0"; sha256="0z43hhp798kga70xmiq4wzp5iad553rndn17g3va3dh6lz1k3y3h"; depends=[SCVA SCRT SCMA Rcmdr]; };
   RcmdrPlugin_seeg = derive { name="RcmdrPlugin.seeg"; version="1.0"; sha256="105c2rl3mrcv7r3iqa9d2zs6cys7vfpyydylkg2cggfqkghxgr95"; depends=[Rcmdr seeg sgeostat]; };
