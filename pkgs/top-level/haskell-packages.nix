@@ -578,6 +578,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   dataFix = callPackage ../development/libraries/haskell/data-fix {};
 
+  dataFlags = callPackage ../development/libraries/haskell/data-flags {};
+
   dataHash = callPackage ../development/libraries/haskell/data-hash {};
 
   dataInttrie = callPackage ../development/libraries/haskell/data-inttrie {};
@@ -1087,6 +1089,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   HaTeX = callPackage ../development/libraries/haskell/HaTeX {};
 
+  hayland = callPackage ../development/libraries/haskell/hayland {};
+
   hcltest = callPackage ../development/libraries/haskell/hcltest {};
 
   hedis = callPackage ../development/libraries/haskell/hedis {};
@@ -1419,6 +1423,10 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   jmacroRpcSnap = callPackage ../development/libraries/haskell/jmacro-rpc-snap {};
 
   jpeg = callPackage ../development/libraries/haskell/jpeg {};
+
+  jsFlot = callPackage ../development/libraries/haskell/js-flot {};
+
+  jsJquery = callPackage ../development/libraries/haskell/js-jquery {};
 
   json = callPackage ../development/libraries/haskell/json {};
 
@@ -1831,6 +1839,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   parseargs = callPackage ../development/libraries/haskell/parseargs {};
 
   parsec = callPackage ../development/libraries/haskell/parsec {};
+
+  parsek = callPackage ../development/libraries/haskell/parsek {};
 
   parsers = callPackage ../development/libraries/haskell/parsers {};
 
