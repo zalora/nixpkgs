@@ -10,6 +10,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ gmp pkgconfig ];
 
+  dontPatchELF = true;
+
   configureFlags = [ "--enable-swanctl" "--enable-cmd" ];
 
   NIX_LDFLAGS = "-lgcc_s" ;
