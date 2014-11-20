@@ -309,7 +309,8 @@ let
   };
 
   fetchgit = import ../build-support/fetchgit {
-    inherit stdenv git cacert;
+    inherit stdenv cacert;
+    git = gitMinimal;
   };
 
   fetchgitPrivate = import ../build-support/fetchgit/private.nix {
@@ -9654,6 +9655,10 @@ let
   });
   git = gitAndTools.git;
   gitFull = gitAndTools.gitFull;
+  gitMinimal = git.override {
+    withManual = false;
+    pythonSupport = false;
+  };
   gitSVN = gitAndTools.gitSVN;
 
   gitRepo = callPackage ../applications/version-management/git-repo {
