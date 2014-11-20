@@ -115,6 +115,7 @@ in
     systemd.services.strongswan = {
       description = "strongSwan IPSec service";
       wantedBy = [ "multi-user.target" ];
+      path = with pkgs; [ kmod ]; # XXX Linux
       wants = [ "keys.target" ];
       after = [ "network.target" "keys.target" ];
       environment = {
