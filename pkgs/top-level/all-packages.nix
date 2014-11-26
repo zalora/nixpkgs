@@ -465,6 +465,8 @@ let
 
   aescrypt = callPackage ../tools/misc/aescrypt { };
 
+  afl = callPackage ../tools/security/afl { };
+
   ahcpd = callPackage ../tools/networking/ahcpd { };
 
   aide = callPackage ../tools/security/aide { };
@@ -2512,6 +2514,8 @@ let
 
   tmux = callPackage ../tools/misc/tmux { };
 
+  tmin = callPackage ../tools/security/tmin { };
+
   tor = callPackage ../tools/security/tor { };
 
   torbutton = callPackage ../tools/security/torbutton { };
@@ -3443,17 +3447,16 @@ let
     openblas = openblas_0_2_2;
   };
 
-  julia032 = let
+  julia033 = let
     liblapack = liblapack_3_5_0.override {shared = true;};
-  in callPackage ../development/compilers/julia/0.3.2.nix {
+  in callPackage ../development/compilers/julia/0.3.3.nix {
     inherit liblapack;
     suitesparse = suitesparse.override {
       inherit liblapack;
     };
-    llvm = llvm_34;
-    openblas = openblas_0_2_10;
+    llvm = llvm_33;
   };
-  julia = julia032;
+  julia = julia033;
 
   lazarus = callPackage ../development/compilers/fpc/lazarus.nix {
     fpc = fpc;
@@ -9155,6 +9158,7 @@ let
     channel = "stable";
     pulseSupport = config.pulseaudio or true;
     enablePepperFlash = config.chromium.enablePepperFlash or false;
+    enableWideVine = config.chromium.enableWideVine or false;
     hiDPISupport = config.chromium.hiDPISupport or false;
   };
 
@@ -11504,6 +11508,8 @@ let
   opentyrian = callPackage ../games/opentyrian { };
 
   openxcom = callPackage ../games/openxcom { };
+
+  performous = callPackage ../games/performous { };
 
   pingus = callPackage ../games/pingus {};
 
