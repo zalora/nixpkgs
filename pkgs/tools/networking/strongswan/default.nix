@@ -12,8 +12,6 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ gmp pkgconfig python ];
 
-  dontPatchELF = true;
-
   configureFlags = [ "--enable-swanctl" "--enable-cmd" ];
 
   NIX_LDFLAGS = "-lgcc_s" ;
