@@ -67,6 +67,7 @@
   ./programs/ssmtp.nix
   ./programs/uim.nix
   ./programs/venus.nix
+  ./programs/virtualbox-host.nix
   ./programs/wvdial.nix
   ./programs/freetds.nix
   ./programs/zsh/zsh.nix
@@ -118,6 +119,7 @@
   ./services/databases/openldap.nix
   ./services/databases/opentsdb.nix
   ./services/databases/postgresql.nix
+  ./services/databases/postgresqlx.nix
   ./services/databases/redis.nix
   ./services/databases/virtuoso.nix
   ./services/desktops/accountsservice.nix
@@ -291,6 +293,7 @@
   ./services/networking/znc.nix
   ./services/printing/cupsd.nix
   ./services/scheduling/atd.nix
+  ./services/scheduling/chronos.nix
   ./services/scheduling/cron.nix
   ./services/scheduling/fcron.nix
   ./services/search/elasticsearch.nix
@@ -308,6 +311,7 @@
   ./services/system/nscd.nix
   ./services/system/uptimed.nix
   ./services/torrent/deluge.nix
+  ./services/torrent/peerflix.nix
   ./services/torrent/transmission.nix
   ./services/ttys/agetty.nix
   ./services/ttys/gpm.nix
@@ -387,6 +391,8 @@
   ./tasks/kbd.nix
   ./tasks/lvm.nix
   ./tasks/network-interfaces.nix
+  ./tasks/network-interfaces-systemd.nix
+  ./tasks/network-interfaces-scripted.nix
   ./tasks/scsi-link-power-management.nix
   ./tasks/swraid.nix
   ./tasks/trackpoint.nix
@@ -394,6 +400,7 @@
   ./virtualisation/container-config.nix
   ./virtualisation/containers.nix
   ./virtualisation/docker.nix
+  ./virtualisation/kubernetes.nix
   ./virtualisation/libvirtd.nix
   ./virtualisation/lxc.nix
   #./virtualisation/nova.nix
