@@ -76,6 +76,7 @@ in
 
   options.services.postgresqlx = mkOption {
     description = "PostgreSQL instances.";
+    default = {};
     type = types.attrsOf (types.submodule ({
       options = {
         package = mkOption {
