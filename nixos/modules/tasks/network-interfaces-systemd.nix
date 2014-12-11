@@ -1,5 +1,6 @@
-{ config, lib, ... }:
+{ config, lib, utils, ... }:
 
+with utils;
 with lib;
 
 let
