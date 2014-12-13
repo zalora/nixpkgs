@@ -36,7 +36,7 @@ let
     ${get config_file "data_directory"}
     if [ -f $data_directory/.init ]; then
       sleep 1
-      psql="${package}/bin/psql -d postgres"
+      psql="${package}/bin/psql -d postgres -v ON_ERROR_STOP=1"
       ${get config_file "port"}
       if [ -n "$port" ]; then
         psql="$psql -p $port"
