@@ -385,4 +385,9 @@ rec {
     http://hdiff.luite.com/packages/archive/package/
   ];
 
+  # MySQL mirrors
+  mysql = [
+    http://cdn.mysql.com/Downloads/
+    http://mysql.mirrors.pair.com/Downloads/
+  ];
 }
