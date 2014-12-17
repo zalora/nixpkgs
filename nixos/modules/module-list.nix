@@ -102,6 +102,8 @@
   ./services/backup/rsnapshot.nix
   ./services/backup/sitecopy-backup.nix
   ./services/backup/tarsnap.nix
+  ./services/cluster/fleet.nix
+  ./services/cluster/kubernetes.nix
   ./services/computing/torque/server.nix
   ./services/computing/torque/mom.nix
   ./services/continuous-integration/jenkins/default.nix
@@ -136,6 +138,7 @@
   ./services/desktops/gnome3/seahorse.nix
   ./services/desktops/gnome3/sushi.nix
   ./services/desktops/gnome3/tracker.nix
+  ./services/desktops/profile-sync-daemon.nix
   ./services/desktops/telepathy.nix
   ./services/games/ghost-one.nix
   ./services/games/minecraft-server.nix
@@ -175,6 +178,7 @@
   ./services/misc/etcd.nix
   ./services/misc/felix.nix
   ./services/misc/folding-at-home.nix
+  ./services/misc/gitlab.nix
   ./services/misc/gitolite.nix
   ./services/misc/gpsd.nix
   ./services/misc/mesos-master.nix
@@ -306,6 +310,7 @@
   ./services/security/haveged.nix
   ./services/security/tor.nix
   ./services/security/torsocks.nix
+  ./services/system/cloud-init.nix
   ./services/system/dbus.nix
   ./services/system/kerberos.nix
   ./services/system/nscd.nix
@@ -401,8 +406,6 @@
   ./virtualisation/container-config.nix
   ./virtualisation/containers.nix
   ./virtualisation/docker.nix
-  ./virtualisation/fleet.nix
-  ./virtualisation/kubernetes.nix
   ./virtualisation/libvirtd.nix
   ./virtualisation/lxc.nix
   #./virtualisation/nova.nix

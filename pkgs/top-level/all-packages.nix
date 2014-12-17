@@ -499,6 +499,8 @@ let
     jre = jdk;
   };
 
+  apitrace = callPackage ../applications/graphics/apitrace {};
+
   argyllcms = callPackage ../tools/graphics/argyllcms {};
 
   arp-scan = callPackage ../tools/misc/arp-scan { };
@@ -513,6 +515,8 @@ let
       paths = [ texLive texLiveExtra texLiveCMSuper ];
     };
   };
+
+  attic = callPackage ../tools/backup/attic { };
 
   awscli = callPackage ../tools/admin/awscli { };
 
@@ -650,7 +654,6 @@ let
   bsod = callPackage ../misc/emulators/bsod { };
 
   btrfsProgs = callPackage ../tools/filesystems/btrfsprogs { };
-  btrfsProgs-3_16 = callPackage ../tools/filesystems/btrfsprogs/3.16.nix { };
 
   bwm_ng = callPackage ../tools/networking/bwm-ng { };
 
@@ -661,6 +664,8 @@ let
   catdoc = callPackage ../tools/text/catdoc { };
 
   ccnet = callPackage ../tools/networking/ccnet { };
+
+  cloud-init = callPackage ../tools/virtualization/cloud-init { };
 
   consul = callPackage ../servers/consul {
     inherit ruby rubyLibs;
@@ -1271,6 +1276,12 @@ let
 
   gifsicle = callPackage ../tools/graphics/gifsicle { };
 
+  gitlab = callPackage ../applications/version-management/gitlab {
+    libiconv = libiconvOrLibc;
+  };
+
+  gitlab-shell = callPackage ../applications/version-management/gitlab-shell { };
+
   glusterfs = callPackage ../tools/filesystems/glusterfs { };
 
   glmark2 = callPackage ../tools/graphics/glmark2 { };
@@ -1768,6 +1779,11 @@ let
 
   monit = callPackage ../tools/system/monit { };
 
+  moreutils = callPackage ../tools/misc/moreutils {
+    inherit (perlPackages) IPCRun TimeDate TimeDuration;
+    docbook-xsl = docbook_xsl;
+  };
+
   mosh = callPackage ../tools/networking/mosh {
     inherit (perlPackages) IOTty;
   };
@@ -1906,7 +1922,6 @@ let
 
   nox = callPackage ../tools/package-management/nox {
     pythonPackages = python3Packages;
-    nix = nixUnstable;
   };
 
   nss_pam_ldapd = callPackage ../tools/networking/nss-pam-ldapd {};
@@ -2164,6 +2179,8 @@ let
   pptp = callPackage ../tools/networking/pptp {};
 
   prey-bash-client = callPackage ../tools/security/prey { };
+
+  profile-sync-daemon = callPackage ../tools/misc/profile-sync-daemon { };
 
   projectm = callPackage ../applications/audio/projectm { };
 
@@ -2538,6 +2555,8 @@ let
 
   tmin = callPackage ../tools/security/tmin { };
 
+  tmsu = callPackage ../tools/filesystems/tmsu { };
+
   tor = callPackage ../tools/security/tor { };
 
   tor-arm = callPackage ../tools/security/tor/tor-arm.nix { };
@@ -2789,9 +2808,13 @@ let
     inherit (xlibs) libX11 libXext libXrender;
   };
 
+  wml = callPackage ../development/web/wml { };
+  
   wv = callPackage ../tools/misc/wv { };
 
   wv2 = callPackage ../tools/misc/wv2 { };
+
+  wyrd = callPackage ../tools/misc/wyrd { };
 
   x86info = callPackage ../os-specific/linux/x86info { };
 
@@ -3220,7 +3243,7 @@ let
       libXrandr xproto renderproto xextproto inputproto randrproto;
   });
 
-  gnat = gnat45;
+  gnat = gnat45; # failed to make 4.6 or 4.8 build
 
   gnat45 = wrapGCC (gcc45.gcc.override {
     name = "gnat";
@@ -3235,20 +3258,7 @@ let
     ppl = null;
   });
 
-  gnat46 = wrapGCC (gcc46.gcc.override {
-    name = "gnat";
-    langCC = false;
-    langC = true;
-    langAda = true;
-    profiledCompiler = false;
-    gnatboot = gnat45;
-    # We can't use the ppl stuff, because we would have
-    # libstdc++ problems.
-    ppl = null;
-    cloog = null;
-  });
-
-  gnatboot = wrapGCC (import ../development/compilers/gnatboot {
+  gnatboot = wrapGCC-old (import ../development/compilers/gnatboot {
     inherit fetchurl stdenv;
   });
 
@@ -3911,6 +3921,8 @@ let
   };
 
   wrapGCC = wrapGCCWith (makeOverridable (import ../build-support/gcc-wrapper)) glibc;
+  # legacy version, used for gnat bootstrapping
+  wrapGCC-old = wrapGCCWith (makeOverridable (import ../build-support/gcc-wrapper-old)) glibc;
 
   wrapGCCCross =
     {gcc, libc, binutils, cross, shell ? "", name ? "gcc-cross-wrapper"}:
@@ -4037,7 +4049,6 @@ let
   mujs = callPackage ../development/interpreters/mujs { };
 
   nix-exec = callPackage ../development/interpreters/nix-exec {
-    nix = nixUnstable;
     git = gitMinimal;
   };
 
@@ -4699,7 +4710,7 @@ let
 
   remake = callPackage ../development/tools/build-managers/remake { };
 
-  rr = callPackage_i686 ../development/tools/analysis/rr { };
+  rr = callPackage ../development/tools/analysis/rr { };
 
   saleae-logic = callPackage ../development/tools/misc/saleae-logic { };
 
@@ -5127,7 +5138,7 @@ let
     vpxSupport = !stdenv.isMips;
   };
 
-  ffmpeg_2_3 = callPackage ../development/libraries/ffmpeg/2.3.x.nix { };
+  ffmpeg_2_2 = callPackage ../development/libraries/ffmpeg/2.2.x.nix { };
 
   ffmpeg_2 = callPackage ../development/libraries/ffmpeg/2.x.nix { };
 
@@ -5628,8 +5639,6 @@ let
   leptonica = callPackage ../development/libraries/leptonica {
     libpng = libpng12;
   };
-
-  lgi = callPackage ../development/libraries/lgi { };
 
   lib3ds = callPackage ../development/libraries/lib3ds { };
 
@@ -7711,7 +7720,6 @@ let
   mariadb = callPackage ../servers/sql/mariadb {};
 
   mongodb = callPackage ../servers/nosql/mongodb {
-    boost = boost156;
     sasl = cyrus_sasl;
   };
 
@@ -8240,15 +8248,6 @@ let
       ];
   };
 
-  linux_3_16 = makeOverridable (import ../os-specific/linux/kernel/linux-3.16.nix) {
-    inherit fetchurl stdenv perl buildLinux;
-    kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
-      [ kernelPatches.mips_fpureg_emu
-        kernelPatches.mips_fpu_sigill
-        kernelPatches.mips_ext3_n32
-      ];
-  };
-
   linux_3_17 = makeOverridable (import ../os-specific/linux/kernel/linux-3.17.nix) {
     inherit fetchurl stdenv perl buildLinux;
     kernelPatches = lib.optionals ((platform.kernelArch or null) == "mips")
@@ -8419,7 +8418,6 @@ let
   linuxPackages_3_10_tuxonice = linuxPackagesFor pkgs.linux_3_10_tuxonice linuxPackages_3_10_tuxonice;
   linuxPackages_3_12 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_3_12 linuxPackages_3_12);
   linuxPackages_3_14 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_3_14 linuxPackages_3_14);
-  linuxPackages_3_16 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_3_16 linuxPackages_3_16);
   linuxPackages_3_17 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_3_17 linuxPackages_3_17);
   linuxPackages_3_18 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_3_18 linuxPackages_3_18);
   linuxPackages_testing = recurseIntoAttrs (linuxPackagesFor pkgs.linux_testing linuxPackages_testing);
@@ -9196,6 +9194,8 @@ let
     inherit (xlibs) libXScrnSaver scrnsaverproto libX11 xproto kbproto;
   };
   funpidgin = carrier;
+
+  cava = callPackage ../applications/audio/cava { };
 
   cc1394 = callPackage ../applications/video/cc1394 { };
 
@@ -10759,9 +10759,7 @@ let
 
   smartdeblur = callPackage ../applications/graphics/smartdeblur { };
 
-  snapper = callPackage ../tools/misc/snapper {
-    btrfsProgs = btrfsProgs-3_16;
-  };
+  snapper = callPackage ../tools/misc/snapper { };
 
   snd = callPackage ../applications/audio/snd { };
 
@@ -10879,6 +10877,8 @@ let
   telepathy_rakia = callPackage ../applications/networking/instant-messengers/telepathy/rakia { };
 
   telepathy_salut = callPackage ../applications/networking/instant-messengers/telepathy/salut {};
+
+  telepathy_idle = callPackage ../applications/networking/instant-messengers/telepathy/idle {};
 
   terminator = callPackage ../applications/misc/terminator {
     vte = gnome.vte.override { pythonSupport = true; };
@@ -11086,10 +11086,8 @@ let
   };
 
   vlc = callPackage ../applications/video/vlc {
-    ffmpeg = ffmpeg_2_3;
+    ffmpeg = ffmpeg_2_2;
   };
-
-  libvlc = vlc.override { onlyLibVLC = true; };
 
   vmpk = callPackage ../applications/audio/vmpk { };
 
@@ -11165,6 +11163,7 @@ let
     in
     import ../applications/networking/browsers/firefox/wrapper.nix {
       inherit stdenv lib makeWrapper makeDesktopItem browser browserName desktopName nameSuffix icon;
+      libtrick = true;
       plugins =
          assert !(enableGnash && enableAdobeFlash);
          assert !(jre && icedtea);
@@ -11443,10 +11442,7 @@ let
     pygtk = pyGtkGlade;
   };
 
-  zotero = callPackage ../applications/office/zotero {
-    inherit (gnome) libIDL;
-    inherit (pythonPackages) pysqlite;
-  };
+  zotero = callPackage ../applications/office/zotero {};
 
   zynaddsubfx = callPackage ../applications/audio/zynaddsubfx { };
 
@@ -12578,18 +12574,25 @@ let
     stateDir = config.nix.stateDir or "/nix/var";
   };
 
+  /*
   nixUnstable = callPackage ../tools/package-management/nix/unstable.nix {
     storeDir = config.nix.storeDir or "/nix/store";
     stateDir = config.nix.stateDir or "/nix/var";
   };
+  */
+  nixUnstable = nixStable;
 
   nixops = callPackage ../tools/package-management/nixops { };
 
   nixopsModular = callPackage ../tools/package-management/nixops-modular { };
 
+  nixopsUnstable = callPackage ../tools/package-management/nixops/unstable.nix { };
+
   nix-prefetch-scripts = callPackage ../tools/package-management/nix-prefetch-scripts { };
 
   nix-repl = callPackage ../tools/package-management/nix-repl { };
+
+  nix-serve = callPackage ../tools/package-management/nix-serve { };
 
   nut = callPackage ../applications/misc/nut { };
 

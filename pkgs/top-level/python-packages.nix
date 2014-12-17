@@ -522,11 +522,11 @@ let
   });
 
   astroid = buildPythonPackage (rec {
-    name = "astroid-1.2.1";
-    propagatedBuildInputs = with self; [ logilab_common ];
+    name = "astroid-1.3.2";
+    propagatedBuildInputs = with self; [ logilab_common six ];
     src = pkgs.fetchurl {
-      url = "https://pypi.python.org/packages/source/a/astroid/${name}.zip";
-      md5 = "337017c82a28c97741797493fb2c980f";
+      url = "https://pypi.python.org/packages/source/a/astroid/${name}.tar.gz";
+      md5 = "2ab96129a977b6eba27765a15d1a9bf2";
     };
   });
 
@@ -2755,6 +2755,42 @@ let
     };
   };
 
+  jsonpatch = buildPythonPackage rec {
+    name = "jsonpatch-1.8";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/j/jsonpatch/jsonpatch-1.8.tar.gz";
+      sha256 = "0xhp6prvk219vnzixbj231wymd458nqbnmsf5fn4252092prvig5";
+    };
+
+    propagatedBuildInputs = with self; [ six jsonpointer ];
+
+    meta = {
+      description = "Apply JSON-Patches (RFC 6902)";
+      homepage = "https://github.com/stefankoegl/python-json-patch";
+      license = stdenv.lib.licenses.bsd3;
+      platforms = stdenv.lib.platforms.all;
+    };
+  };
+
+  jsonpointer = buildPythonPackage rec {
+    name = "jsonpointer-1.4";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-1.4.tar.gz";
+      sha256 = "1d0555smqwdbi0nm48hyqzywb9m2jlz5izgv56ll3zk7viz3b7fb";
+    };
+
+    #propagatedBuildInputs = with self; [ six jsonpointer ];
+
+    meta = {
+      description = "Identify specific nodes in a JSON document (RFC 6901)";
+      homepage = "https://github.com/stefankoegl/python-json-pointer";
+      license = stdenv.lib.licenses.bsd3;
+      platforms = stdenv.lib.platforms.all;
+    };
+  };
+
   jsonwatch = buildPythonPackage rec {
     name = "jsonwatch-0.2.0";
 
@@ -3498,11 +3534,11 @@ let
   };
 
   deluge = buildPythonPackage rec {
-    name = "deluge-1.3.10";
+    name = "deluge-1.3.11";
 
     src = pkgs.fetchurl {
       url = "http://download.deluge-torrent.org/source/${name}.tar.bz2";
-      sha256 = "1x8ylcw88a6x3zyvyxmzjsbcy9dr2s5dxam2aw6harb4n1l2v9kd";
+      sha256 = "16681sg7yi03jqyifhalnw4vavb8sj94cisldal7nviai8dz9qc3";
     };
 
     propagatedBuildInputs = with self; [
@@ -5636,6 +5672,23 @@ let
     };
   };
 
+  mutag = buildPythonPackage rec {
+    disabled = ! isPy3k;
+    name = "mutag-0.0.1-b1b3ff2ad8";
+    src = pkgs.fetchgit {
+      url = "https://github.com/aroig/mutag.git";
+      sha256 = "1x9wl789ib62zmrbjy96jhcbjnym6fb1jvdjiw4smapifm2hnyr7";
+      rev = "efc9bc7e1ea345e7bd0568848598de";
+    };
+
+    propagatedBuildInputs = with self; [ pyparsing ];
+
+    meta = {
+      homepage = https://github.com/aroig/mutag;
+      license = stdenv.lib.licenses.gpl3;
+      maintainers = [ stdenv.lib.maintainers.DamienCassou ];
+    };
+  };
 
   mutagen = buildPythonPackage (rec {
     name = "mutagen-1.23";
@@ -6118,6 +6171,22 @@ let
       license = "bsd";
     };
   };
+
+  oauth = buildPythonPackage (rec {
+    name = "oauth-1.0.1";
+
+    src = pkgs.fetchurl {
+      url = "http://pypi.python.org/packages/source/o/oauth/oauth-1.0.1.tar.gz";
+      sha256 = "0pdgi35hczsslil4890xqawnbpdazkgf2v1443847h5hy2gq2sg7";
+    };
+
+    meta = {
+      homepage = "http://code.google.com/p/oauth";
+      description = "Library for OAuth version 1.0a.";
+      license = licenses.mit;
+      platforms = stdenv.lib.platforms.all;
+    };
+  });
 
   oauth2 = buildPythonPackage (rec {
     name = "oauth2-1.5.211";
@@ -6884,6 +6953,27 @@ let
     };
   };
 
+  pycosat = pythonPackages.buildPythonPackage rec {
+    name = "pycosat-0.6.0";
+
+    propagatedBuildInputs = with pythonPackages; [  ];
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/p/pycosat/${name}.tar.gz";
+      sha256 = "02sdn2998jlrm35smn1530hix3kzwyc1jv49cjdcnvfvrqqi3rww";
+    };
+
+    meta = with stdenv.lib; {
+      description = ''PicoSAT is a popular SAT solver written by Armin
+          Biere in pure C. This package provides efficient Python bindings
+          to picosat on the C level, i.e. when importing pycosat, the
+          picosat solver becomes part of the Python process itself. For
+          ease of deployment, the picosat source (namely picosat.c and
+          picosat.h) is included in this project.'';
+      homepage = https://github.com/ContinuumIO/pycosat;
+      license = licenses.mit;
+    };
+  };
 
   pygit2 = buildPythonPackage rec {
     name = "pygit2-0.21.2";
@@ -7420,6 +7510,8 @@ let
     name = "pyptlib-${version}";
     disabled = isPyPy || isPy3k;
     version = "0.0.6";
+
+    doCheck = false;  # No such file or directory errors on 32bit
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/p/pyptlib/pyptlib-${version}.tar.gz";
@@ -8675,8 +8767,6 @@ let
 
   scikitlearn = buildPythonPackage {
     name = "scikit-learn-0.15.2";
-
-    disabled = isPy3k;
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/s/scikit-learn/scikit-learn-0.15.2.tar.gz";
@@ -12107,7 +12197,7 @@ let
     };
 
     propagatedBuildInputs = with self; [ boto-230 crcmod httplib2 gcs-oauth2-boto-plugin google_api_python_client gflags
-                                         retry_decorator pkgs.pyopenssl socksipy-branch ];
+                                         retry_decorator pkgs.pyopenssl socksipy-branch crcmod ];
   };
 
   pypi2nix = self.buildPythonPackage rec {
