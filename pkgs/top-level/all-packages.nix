@@ -252,7 +252,7 @@ let
   };
 
   autoreconfHook = makeSetupHook
-    { substitutions = { inherit autoconf automake libtool; }; }
+    { substitutions = { inherit autoconf automake libtool gettext; }; }
     ../build-support/setup-hooks/autoreconf.sh;
 
   buildEnv = import ../build-support/buildenv {
@@ -613,7 +613,9 @@ let
 
   bchunk = callPackage ../tools/cd-dvd/bchunk { };
 
-  bfr = callPackage ../tools/misc/bfr { };
+  bfr = callPackage ../tools/misc/bfr {
+    perl = perl516; # Docs fail to build with newer versions
+  };
 
   bindfs = callPackage ../tools/filesystems/bindfs { };
 
@@ -1144,6 +1146,8 @@ let
   fakeroot = callPackage ../tools/system/fakeroot { };
 
   fakechroot = callPackage ../tools/system/fakechroot { };
+
+  fatsort = callPackage ../tools/filesystems/fatsort { };
 
   fatrace = callPackage ../os-specific/linux/fatrace { };
 
@@ -1836,6 +1840,8 @@ let
 
   ndjbdns = callPackage ../tools/networking/ndjbdns { };
 
+  nestopia = callPackage ../misc/emulators/nestopia { };
+
   netatalk = callPackage ../tools/filesystems/netatalk { };
 
   netcdf = callPackage ../development/libraries/netcdf { };
@@ -1958,6 +1964,8 @@ let
   obexftp = callPackage ../tools/bluetooth/obexftp { };
 
   obnam = callPackage ../tools/backup/obnam { };
+
+  ocz-toolbox = callPackage ../os-specific/linux/ocz-toolbox { };
 
   odt2txt = callPackage ../tools/text/odt2txt { };
 
@@ -2575,6 +2583,8 @@ let
 
   traceroute = callPackage ../tools/networking/traceroute { };
 
+  trash-cli = callPackage ../tools/misc/trash-cli { };
+
   trickle = callPackage ../tools/networking/trickle {};
 
   trousers = callPackage ../tools/security/trousers { };
@@ -2809,7 +2819,7 @@ let
   };
 
   wml = callPackage ../development/web/wml { };
-  
+
   wv = callPackage ../tools/misc/wv { };
 
   wv2 = callPackage ../tools/misc/wv2 { };
@@ -4320,6 +4330,8 @@ let
 
   autoconf = callPackage ../development/tools/misc/autoconf { };
 
+  autoconf-archive = callPackage ../development/tools/misc/autoconf-archive { };
+
   autoconf213 = callPackage ../development/tools/misc/autoconf/2.13.nix { };
 
   autocutsel = callPackage ../tools/X11/autocutsel{ };
@@ -4679,8 +4691,6 @@ let
   premake4 = callPackage ../development/tools/misc/premake { };
 
   premake = premake4;
-
-  pstack = callPackage ../development/tools/misc/gdb/pstack.nix { };
 
   racerRust = callPackage ../development/tools/rust/racer { rust = rustcMaster; };
 
@@ -5912,6 +5922,8 @@ let
 
   libmcrypt = callPackage ../development/libraries/libmcrypt {};
 
+  libmediainfo = callPackage ../development/libraries/libmediainfo { };
+
   libmhash = callPackage ../development/libraries/libmhash {};
 
   libmodbus = callPackage ../development/libraries/libmodbus {};
@@ -6320,6 +6332,8 @@ let
 
   libyubikey = callPackage ../development/libraries/libyubikey { };
 
+  libzen = callPackage ../development/libraries/libzen { };
+
   libzip = callPackage ../development/libraries/libzip { };
 
   libzdb = callPackage ../development/libraries/libzdb { };
@@ -6526,6 +6540,8 @@ let
 
   opencascade_oce = callPackage ../development/libraries/opencascade/oce.nix { };
 
+  opencollada = callPackage ../development/libraries/opencollada { };
+
   opencsg = callPackage ../development/libraries/opencsg { };
 
   openct = callPackage ../development/libraries/openct { };
@@ -6606,13 +6622,7 @@ let
     qt4 = null;
   };
 
-  phonon_backend_gstreamer = callPackage ../development/libraries/phonon-backend-gstreamer { inherit qt4; };
-
-  phonon_qt5_backend_gstreamer = phonon_backend_gstreamer.override {
-    withQt5 = true;
-    inherit qt5;
-    qt4 = null;
-  };
+  phonon_backend_gstreamer = callPackage ../development/libraries/phonon-backend-gstreamer { };
 
   phonon_backend_vlc = callPackage ../development/libraries/phonon-backend-vlc { inherit qt4; };
 
@@ -6633,6 +6643,8 @@ let
   pocketsphinx = callPackage ../development/libraries/pocketsphinx { };
 
   podofo = callPackage ../development/libraries/podofo { lua5 = lua5_1; };
+
+  poker-eval = callPackage ../development/libraries/poker-eval { };
 
   polkit = callPackage ../development/libraries/polkit {
     spidermonkey = spidermonkey_185;
@@ -7209,6 +7221,8 @@ let
 
   cppzmq = callPackage ../development/libraries/cppzmq {};
 
+  czmq = callPackage ../development/libraries/czmq { };
+
   zziplib = callPackage ../development/libraries/zziplib { };
 
   ### DEVELOPMENT / LIBRARIES / AGDA
@@ -7720,12 +7734,15 @@ let
   mariadb = callPackage ../servers/sql/mariadb {};
 
   mongodb = callPackage ../servers/nosql/mongodb {
+    boost = boost156;
     sasl = cyrus_sasl;
   };
 
   riak = callPackage ../servers/nosql/riak/1.3.1.nix { };
 
   influxdb = callPackage ../servers/nosql/influxdb { };
+
+  hyperdex = callPackage ../servers/nosql/hyperdex { };
 
   mysql51 = import ../servers/sql/mysql/5.1.x.nix {
     inherit fetchurl ncurses zlib perl openssl stdenv;
@@ -7747,6 +7764,8 @@ let
   neo4j = callPackage ../servers/nosql/neo4j { };
 
   net_snmp = callPackage ../servers/monitoring/net-snmp { };
+
+  newrelic-sysmond = callPackage ../servers/monitoring/newrelic-sysmond { };
 
   riemann = callPackage ../servers/monitoring/riemann { };
 
@@ -8894,6 +8913,8 @@ let
 
   inherit (gnome3) gsettings_desktop_schemas;
 
+  gyre-fonts = callPackage ../data/fonts/gyre {};
+
   hicolor_icon_theme = callPackage ../data/icons/hicolor-icon-theme { };
 
   inconsolata = callPackage ../data/fonts/inconsolata {};
@@ -8905,6 +8926,8 @@ let
   kochi-substitute = callPackage ../data/fonts/kochi-substitute {};
 
   kochi-substitute-naga10 = callPackage ../data/fonts/kochi-substitute-naga10 {};
+
+  league-of-moveable-type = callPackage ../data/fonts/league-of-moveable-type {};
 
   liberation_ttf_from_source = callPackage ../data/fonts/redhat-liberation-fonts { };
   liberation_ttf_binary = callPackage ../data/fonts/redhat-liberation-fonts/binary.nix { };
@@ -9452,6 +9475,7 @@ let
     gitModes = callPackage ../applications/editors/emacs-modes/git-modes { };
 
     haskellMode = callPackage ../applications/editors/emacs-modes/haskell { };
+    haskellModeGit = lowPrio (callPackage ../applications/editors/emacs-modes/haskell/git.nix { });
 
     hsc3Mode = callPackage ../applications/editors/emacs-modes/hsc3 { };
 
@@ -9905,6 +9929,10 @@ let
 
   gpsd = callPackage ../servers/gpsd { };
 
+  gtk2fontsel = callPackage ../applications/misc/gtk2fontsel {
+    inherit (gnome2) gtk;
+  };
+
   guitone = callPackage ../applications/version-management/guitone {
     graphviz = graphviz_2_32;
   };
@@ -10170,6 +10198,10 @@ let
 
   mda_lv2 = callPackage ../applications/audio/mda-lv2 { };
 
+  mediainfo = callPackage ../applications/misc/mediainfo { };
+
+  mediainfo-gui = callPackage ../applications/misc/mediainfo-gui { };
+
   meld = callPackage ../applications/version-management/meld {
     inherit (gnome) scrollkeeper;
     pygtk = pyGtkGlade;
@@ -10210,6 +10242,8 @@ let
   minimodem = callPackage ../applications/audio/minimodem { };
 
   minidjvu = callPackage ../applications/graphics/minidjvu { };
+
+  mimms = callPackage ../applications/audio/mimms {};
 
   mirage = callPackage ../applications/graphics/mirage {};
 
@@ -10263,8 +10297,10 @@ let
   };
 
   easytag = callPackage ../applications/audio/easytag {
-    inherit (gnome3) gnome_icon_theme;
+    inherit (gnome3) gnome_icon_theme dconf;
   };
+
+  mp3gain = callPackage ../applications/audio/mp3gain { };
 
   mp3info = callPackage ../applications/audio/mp3info { };
 
@@ -11182,7 +11218,7 @@ let
          );
       libs = [ gstreamer gst_plugins_base ] ++ lib.optionals (cfg.enableQuakeLive or false)
              (with xlibs; [ stdenv.gcc libX11 libXxf86dga libXxf86vm libXext libXt alsaLib zlib ]);
-      gst_plugins = [ gst_plugins_base gst_plugins_good gst_ffmpeg ];
+      gst_plugins = [ gst_plugins_base gst_plugins_good gst_plugins_bad gst_plugins_ugly gst_ffmpeg ];
       gtk_modules = [ libcanberra ];
     };
 
