@@ -14,13 +14,11 @@ assert enableThreading -> (stdenv ? glibc);
 
 let
 
-  libc = if stdenv.gcc.libc or null != null then stdenv.gcc.libc else "/usr";
+  libc = if stdenv.cc.libc or null != null then stdenv.cc.libc else "/usr";
 
 in
 
-with {
-  inherit (stdenv.lib) optional optionalString;
-};
+with stdenv.lib;
 
 stdenv.mkDerivation rec {
   name = "perl-5.20.1";
@@ -44,7 +42,7 @@ stdenv.mkDerivation rec {
   # Miniperl needs -lm. perl needs -lrt.
   configureFlags =
     [ "-de"
-      "-Dcc=gcc"
+      "-Dcc=cc"
       "-Uinstallusrbinperl"
       "-Dinstallstyle=lib/perl5"
       "-Duseshrplib"
@@ -66,9 +64,11 @@ stdenv.mkDerivation rec {
       ${optionalString stdenv.isArm ''
         configureFlagsArray=(-Dldflags="-lm -lrt")
       ''}
+    '' + optionalString stdenv.isDarwin ''
+      substituteInPlace hints/darwin.sh --replace "env MACOSX_DEPLOYMENT_TARGET=10.3" ""
     '';
 
-  preBuild = optionalString (!(stdenv ? gcc && stdenv.gcc.nativeTools))
+  preBuild = optionalString (!(stdenv ? cc && stdenv.cc.nativeTools))
     ''
       # Make Cwd work on NixOS (where we don't have a /bin/pwd).
       substituteInPlace dist/PathTools/Cwd.pm --replace "'/bin/pwd'" "'$(type -tP pwd)'"
@@ -77,4 +77,11 @@ stdenv.mkDerivation rec {
   setupHook = ./setup-hook.sh;
 
   passthru.libPrefix = "lib/perl5/site_perl";
+
+  meta = {
+    homepage = https://www.perl.org/;
+    description = "The standard implementation of the Perl 5 programmming language";
+    maintainers = [ maintainers.eelco ];
+    platforms = platforms.all;
+  };
 }

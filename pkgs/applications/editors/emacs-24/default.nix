@@ -18,7 +18,10 @@ stdenv.mkDerivation rec {
     sha256 = "1zflm6ac34s6v166p58ilxrxbxjm0q2wfc25f8y0mjml1lbr3qs7";
   };
 
-  patches = [ ./darwin-new-sections.patch ];
+  patches = stdenv.lib.optionals stdenv.isDarwin [
+    ./darwin-new-sections.patch
+    ./at-fdcwd.patch
+  ];
 
   buildInputs =
     [ ncurses gconf libxml2 gnutls alsaLib pkgconfig texinfo ]
@@ -41,16 +44,8 @@ stdenv.mkDerivation rec {
     "-I${cairo}/include/cairo";
 
   postInstall = ''
-    cat >$out/share/emacs/site-lisp/site-start.el <<EOF
-    ;; nixos specific load-path
-    (when (getenv "NIX_PROFILES") (setq load-path
-                          (append (reverse (mapcar (lambda (x) (concat x "/share/emacs/site-lisp/"))
-                                                   (split-string (getenv "NIX_PROFILES"))))
-                           load-path)))
-        
-    ;; make tramp work for NixOS machines
-    (eval-after-load 'tramp '(add-to-list 'tramp-remote-path "/run/current-system/sw/bin"))
-    EOF
+    mkdir -p $out/share/emacs/site-lisp/
+    cp ${./site-start.el} $out/share/emacs/site-lisp/site-start.el
   '';
 
   doCheck = true;
@@ -61,6 +56,9 @@ stdenv.mkDerivation rec {
     license     = licenses.gpl3Plus;
     maintainers = with maintainers; [ chaoflow lovek323 simons the-kenny ];
     platforms   = platforms.all;
+
+    # So that Exuberant ctags is preferred
+    priority = 1;
 
     longDescription = ''
       GNU Emacs is an extensible, customizable text editor—and more.  At its

@@ -1,34 +1,24 @@
-{ stdenv, fetchurl, zlib, readline, libossp_uuid, openssl }:
+{ stdenv, fetchurl, zlib, readline, openssl }:
 
-with stdenv.lib;
-
-let version = "9.2.9"; in
+let version = "9.2.10"; in
 
 stdenv.mkDerivation rec {
   name = "postgresql-${version}";
 
   src = fetchurl {
     url = "mirror://postgresql/source/v${version}/${name}.tar.bz2";
-    sha256 = "94ec6d330f125b6fc725741293073b07d7d20cc3e7b8ed127bc3d14ad2370197";
+    sha256 = "1bbkinqzb3c8i0vfzcy2g7djrq0kxz63jgvzda9p0vylxazmnm1m";
   };
 
-  buildInputs = [ zlib readline openssl ] ++ optionals (!stdenv.isDarwin) [ libossp_uuid ];
+  buildInputs = [ zlib readline openssl ];
 
   enableParallelBuilding = true;
 
   makeFlags = [ "world" ];
 
-  configureFlags = [
-    "--with-openssl"
-    ]
-    ++ optionals (!stdenv.isDarwin) ["--with-ossp-uuid"]
-    ;
+  configureFlags = [ "--with-openssl" ];
 
-  patches = [
-    ./disable-resolve_symlinks.patch
-    ./less-is-more.patch
-    ./postgresql-9.4-dont-check-private-key.patch
-    ];
+  patches = [ ./disable-resolve_symlinks.patch ./less-is-more.patch ];
 
   installTargets = [ "install-world" ];
 

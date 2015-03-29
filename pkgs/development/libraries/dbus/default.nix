@@ -3,8 +3,8 @@
 , libX11, libICE, libSM, useX11 ? (stdenv.isLinux || stdenv.isDarwin) }:
 
 let
-  version = "1.8.12";
-  sha256 = "07jhcalg00i2rx5zrgk73rg0vm7lzi5q5z2gscrbl999ipr2h569";
+  version = "1.8.16";
+  sha256 = "01rba8mp8kqvmy6ibdmi806kjr3m14swnskqk02gyhykxxl54ybz";
 
   inherit (stdenv) lib;
 
@@ -91,6 +91,13 @@ let
       stdenv.lib.optionalString (!stdenv.isDarwin) "-Wl,--as-needed "
       + "-ldbus-1";
 
+    # don't provide another dbus-1.pc (with incorrect include and link dirs),
+    # also remove useless empty dirs
+    postInstall = ''
+      rm "$out"/lib/pkgconfig/dbus-1.pc
+      rmdir --parents --ignore-fail-on-non-empty "$out"/{lib/pkgconfig,share/dbus-1/*}
+    '';
+
     meta.platforms = with stdenv.lib.platforms; allBut darwin;
   };
 
@@ -101,3 +108,4 @@ let
   };
 };
 in attrs.libs // attrs
+

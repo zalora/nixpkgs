@@ -31,7 +31,7 @@ in rec {
     nixpkgs = nixpkgsSrc;
   })) [ "unstable" ];
 
-  tested = pkgs.releaseTools.aggregate {
+  tested = pkgs.lib.hydraJob (pkgs.releaseTools.aggregate {
     name = "nixos-${nixos.channel.version}";
     meta = {
       description = "Release-critical builds for the NixOS channel";
@@ -52,7 +52,6 @@ in rec {
         (all nixos.tests.firefox)
         (all nixos.tests.firewall)
         (all nixos.tests.gnome3)
-        (all nixos.tests.installer.grub1)
         (all nixos.tests.installer.lvm)
         (all nixos.tests.installer.separateBoot)
         (all nixos.tests.installer.simple)
@@ -86,6 +85,6 @@ in rec {
         nixpkgs.tarball
         (all nixpkgs.emacs)
       ];
-  };
+  });
 
 }

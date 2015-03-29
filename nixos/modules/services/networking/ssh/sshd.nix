@@ -9,21 +9,13 @@ let
 
   nssModulesPath = config.system.nssModules.path;
 
-  permitRootLoginCheck = v:
-    v == "yes" ||
-    v == "without-password" ||
-    v == "forced-commands-only" ||
-    v == "no";
-
   knownHosts = map (h: getAttr h cfg.knownHosts) (attrNames cfg.knownHosts);
 
-  knownHostsFile = pkgs.runCommand "ssh_known_hosts" {} ''
-    touch "$out"
-    ${flip concatMapStrings knownHosts (h: ''
-      pubkeyfile=${builtins.toFile "host.pub" (if h.publicKey == null then readFile h.publicKeyFile else h.publicKey)}
-      ${pkgs.gnused}/bin/sed 's/^/${concatStringsSep "," h.hostNames} /' $pubkeyfile >> "$out"
-    '')}
-  '';
+  knownHostsText = flip (concatMapStringsSep "\n") knownHosts
+    (h:
+      concatStringsSep "," h.hostNames + " "
+      + (if h.publicKey != null then h.publicKey else readFile h.publicKeyFile)
+    );
 
   userOptions = {
 
@@ -118,12 +110,9 @@ in
 
       permitRootLogin = mkOption {
         default = "without-password";
-        type = types.addCheck types.str permitRootLoginCheck;
+        type = types.enum ["yes" "without-password" "forced-commands-only" "no"];
         description = ''
-          Whether the root user can login using ssh. Valid values are
-          <literal>yes</literal>, <literal>without-password</literal>,
-          <literal>forced-commands-only</literal> or
-          <literal>no</literal>.
+          Whether the root user can login using ssh.
         '';
       };
 
@@ -197,11 +186,13 @@ in
         default =
           [ { path = "/etc/ssh/ssh_host_dsa_key";
               type = "dsa";
-              bits = 1024;
             }
             { path = "/etc/ssh/ssh_host_ecdsa_key";
               type = "ecdsa";
               bits = 521;
+            }
+            { path = "/etc/ssh/ssh_host_ed25519_key";
+              type = "ed25519";
             }
           ];
         description = ''
@@ -301,7 +292,7 @@ in
       { source = "${cfgc.package}/etc/ssh/moduli";
         target = "ssh/moduli";
       }
-      { source = knownHostsFile;
+      { text = knownHostsText;
         target = "ssh/ssh_known_hosts";
       }
     ];
@@ -325,7 +316,7 @@ in
 
                 ${flip concatMapStrings cfg.hostKeys (k: ''
                   if ! [ -f "${k.path}" ]; then
-                      ssh-keygen -t "${k.type}" -b "${toString k.bits}" -f "${k.path}" -N ""
+                      ssh-keygen -t "${k.type}" ${if k ? bits then "-b ${toString k.bits}" else ""} -f "${k.path}" -N ""
                   fi
                 '')}
               '';
@@ -380,6 +371,8 @@ in
         Protocol 2
 
         UsePAM yes
+
+        UsePrivilegeSeparation sandbox
 
         AddressFamily ${if config.networking.enableIPv6 then "any" else "inet"}
         ${concatMapStrings (port: ''

@@ -1,11 +1,11 @@
 { stdenv, fetchurl }:
 
 stdenv.mkDerivation rec {
-  name = "orc-0.4.22";
+  name = "orc-0.4.23";
 
   src = fetchurl {
     url = "http://gstreamer.freedesktop.org/src/orc/${name}.tar.xz";
-    sha256 = "0dgrbjm94y9l63s3srlddjcdxgrv6iazmvwh630jrw159dzhgjh4";
+    sha256 = "1ryz1gfgrxcj806cakcblxf0bcwq8p2mw8k86fs3f5wlwayawzkn";
   };
 
   # building memcpy_speed.log
@@ -19,7 +19,7 @@ stdenv.mkDerivation rec {
     # The source code implementing the Marsenne Twister algorithm is licensed
     # under the 3-clause BSD license. The rest is 2-clause BSD license.
     license = stdenv.lib.licenses.bsd3;
-    platform = stdenv.lib.platforms.linux;
+    platforms = stdenv.lib.platforms.unix;
     maintainers = with stdenv.lib.maintainers; [ fuuzetsu ];
   };
 }

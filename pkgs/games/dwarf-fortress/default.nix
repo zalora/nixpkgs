@@ -4,17 +4,17 @@
 
 let
   baseVersion = "40";
-  patchVersion = "19";
+  patchVersion = "24";
   srcs = {
     df_unfuck = fetchgit {
       url = "https://github.com/svenstaro/dwarf_fortress_unfuck";
-      rev = "dadf3d48e93a2800db5d4f98d775ba8453ca55a4";
-      sha256 = "011pbcfc3a0mnwqg3pkhngnb1h7z1jbx4qbvj03blpzfjia075sv";
+      rev = "39742d64d2886fb594d79e7cc4b98fb917f26811";
+      sha256 = "19vwx6kpv1sf93bx5v8x47f7x2cgxsqk82v6j1a72sa3q7m5cpc7";
     };
 
     df = fetchurl {
       url = "http://www.bay12games.com/dwarves/df_${baseVersion}_${patchVersion}_linux.tar.bz2";
-      sha256 = "16xb6py7l1hf9hc7gn50nwajqgmv01zdhbkh7g6a8gnx7wlhl2p9";
+      sha256 = "0d4jrs45qj89vq9mjg7fxxhis7zivvb0vzjpmkk274b778kccdys";
     };
   };
 
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
   src = "${srcs.df_unfuck} ${srcs.df}";
   phases = "unpackPhase patchPhase configurePhase buildPhase installPhase";
 
-  sourceRoot = "git-export";
+  sourceRoot = srcs.df_unfuck.name;
 
   cmakeFlags = [
     "-DGTK2_GLIBCONFIG_INCLUDE_DIR=${glib}/lib/glib-2.0/include"
@@ -51,8 +51,8 @@ stdenv.mkDerivation rec {
     # Store the original hash for dwarf-therapist 
     echo $(md5sum $out/share/df_linux/libs/Dwarf_Fortress | cut -c1-8) > $out/share/df_linux/hash.md5.orig
     # Fix rpath
-    patchelf --set-rpath "${stdenv.lib.makeLibraryPath [ stdenv.gcc.gcc stdenv.glibc ]}:$out/share/df_linux/libs"  $out/share/df_linux/libs/Dwarf_Fortress
-    cp -f ./git-export/build/libgraphics.so $out/share/df_linux/libs/libgraphics.so
+    patchelf --set-rpath "${stdenv.lib.makeLibraryPath [ stdenv.cc.cc stdenv.glibc ]}:$out/share/df_linux/libs"  $out/share/df_linux/libs/Dwarf_Fortress
+    cp -f ./${srcs.df_unfuck.name}/build/libgraphics.so $out/share/df_linux/libs/libgraphics.so
 
     cp $permission $out/share/df_linux/nix_permission
 
@@ -85,7 +85,7 @@ stdenv.mkDerivation rec {
       done
 
       # now run Dwarf Fortress!
-      export LD_LIBRARY_PATH=\${stdenv.gcc}/lib:${SDL}/lib:${SDL_image}/lib/:${SDL_ttf}/lib/:${gtk2}/lib/:${glib}/lib/:${mesa}/lib/:${openal}/lib/:${libsndfile}/lib:\$DF_DIR/df_linux/libs/
+      export LD_LIBRARY_PATH=\${stdenv.cc}/lib:${SDL}/lib:${SDL_image}/lib/:${SDL_ttf}/lib/:${gtk2}/lib/:${glib}/lib/:${mesa}/lib/:${openal}/lib/:${libsndfile}/lib:\$DF_DIR/df_linux/libs/
 
       export SDL_DISABLE_LOCK_KEYS=1 # Work around for bug in Debian/Ubuntu SDL patch.
       #export SDL_VIDEO_CENTERED=1    # Centre the screen.  Messes up resizing.

@@ -16,16 +16,17 @@ stdenv.mkDerivation {
 
   patchPhase = ''
     patchShebangs libsoup/
+    patch -p1 < ${./bad-symbol.patch}
   '';
 
-  buildInputs = libintlOrEmpty ++ [ intltool python ];
+  buildInputs = libintlOrEmpty ++ [ intltool python sqlite ];
   nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ glib libxml2 gobjectIntrospection ]
-    ++ stdenv.lib.optionals gnomeSupport [ libgnome_keyring sqlite ];
+    ++ stdenv.lib.optionals gnomeSupport [ libgnome_keyring ];
   passthru.propagatedUserEnvPackages = [ glib_networking ];
 
   # glib_networking is a runtime dependency, not a compile-time dependency
-  configureFlags = "--disable-tls-check";
+  configureFlags = "--disable-tls-check" + stdenv.lib.optionalString (!gnomeSupport) " --without-gnome";
 
   NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.isDarwin "-lintl";
 

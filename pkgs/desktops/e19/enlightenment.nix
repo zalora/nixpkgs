@@ -3,21 +3,26 @@
 
 stdenv.mkDerivation rec {
   name = "enlightenment-${version}";
-  version = "0.19.2";
+  version = "0.19.4";
   src = fetchurl {
     url = "http://download.enlightenment.org/rel/apps/enlightenment/${name}.tar.xz";
-    sha256 = "06il67mlbn24ra6rb7gws5ly67i80lfiprhi5cr71qfmnsr4xbqk";
+    sha256 = "0r3bad700cfx5sq8y61dbz3hxdx9n3nf5hzx40ryqld75yxzwxz7";
   };
   buildInputs = [ pkgconfig e19.efl e19.elementary xlibs.libXdmcp xlibs.libxcb
     xlibs.xcbutilkeysyms xlibs.libXrandr libffi pam alsaLib luajit bzip2
     libpthreadstubs gdbm ] ++ stdenv.lib.optionals stdenv.isLinux [ libcap ];
   preConfigure = ''
-    export NIX_CFLAGS_COMPILE="-I${e19.efl}/include/eo-1 -I${e19.efl}/include/ecore-imf-1 -I${e19.efl}/include/ethumb-client-1 -I${e19.efl}/include/ethumb-1 $NIX_CFLAGS_COMPILE"
+    export NIX_CFLAGS_COMPILE="-I${e19.efl}/include/eo-1 -I${e19.efl}/include/ecore-imf-1 -I${e19.efl}/include/ethumb-client-1 -I${e19.efl}/include/elocation-1 -I${e19.efl}/include/ethumb-1 $NIX_CFLAGS_COMPILE"
     export USER_SESSION_DIR=$prefix/lib/systemd/user
 
     substituteInPlace src/modules/xkbswitch/e_mod_parse.c \
       --replace "/usr/share/X11/xkb/rules/xorg.lst" "${xkeyboard_config}/share/X11/xkb/rules/base.lst"
+
+    substituteInPlace "src/bin/e_import_config_dialog.c" \
+      --replace "e_prefix_bin_get()" "\"${e19.efl}/bin\""
   '';
+
+  enableParallelBuilding = true;
 
   # this is a hack and without this cpufreq module is not working:
   #   when set_freqset_setuid is true and "e19_freqset" is set in setuidPrograms (this is taken care of in e19 NixOS module),

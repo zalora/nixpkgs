@@ -58,7 +58,7 @@
 
 { mkDerivation, substituteAll, pkgs }:
     { stdenv ? pkgs.stdenv, name, buildInputs ? []
-    , propagatedBuildInputs ? [], gcc ? stdenv.gcc, cTags ? [], extraCmds ? ""
+    , propagatedBuildInputs ? [], gcc ? stdenv.cc, cTags ? [], extraCmds ? ""
     , cleanupCmds ? "", shell ? "${pkgs.bashInteractive}/bin/bash --norc"}:
 
 mkDerivation {
@@ -141,7 +141,7 @@ mkDerivation {
       }
 
       export PATH
-      echo $name loaded
+      echo $name loaded >&2
 
       trap nix_cleanup EXIT
     EOF

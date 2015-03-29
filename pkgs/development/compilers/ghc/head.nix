@@ -1,25 +1,50 @@
-{ stdenv, fetchurl, ghc, perl, gmp, ncurses, happy, alex }:
+{ stdenv, fetchgit, ghc, perl, gmp, ncurses, libiconv, autoconf, automake, happy, alex }:
+
+let
+
+  buildMK = ''
+    libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-libraries="${gmp}/lib"
+    libraries/integer-gmp_CONFIGURE_OPTS += --configure-option=--with-gmp-includes="${gmp}/include"
+    libraries/terminfo_CONFIGURE_OPTS += --configure-option=--with-curses-includes="${ncurses}/include"
+    libraries/terminfo_CONFIGURE_OPTS += --configure-option=--with-curses-libraries="${ncurses}/lib"
+    DYNAMIC_BY_DEFAULT = NO
+    ${stdenv.lib.optionalString stdenv.isDarwin ''
+      libraries/base_CONFIGURE_OPTS += --configure-option=--with-iconv-includes="${libiconv}/include"
+      libraries/base_CONFIGURE_OPTS += --configure-option=--with-iconv-libraries="${libiconv}/lib"
+    ''}
+  '';
+
+in
 
 stdenv.mkDerivation rec {
-  version = "7.9.20141217";
+  version = "7.11.20150118";
   name = "ghc-${version}";
+  rev = "6ff3db92140e3ac8cbda50d1a4aab976350ac8c4";
 
-  src = fetchurl {
-    url = "http://deb.haskell.org/dailies/2014-12-17/ghc_${version}.orig.tar.bz2";
-    sha256 = "1yfdi9r07aqbnv6xfdhs6cpj0y0yjdr03l5sa4dv0j1xs3lh1wkv";
+  src = fetchgit {
+    url = "git://git.haskell.org/ghc.git";
+    inherit rev;
+    sha256 = "1a1r3nw7x5rd8563770zcg1phm55vi3sxs2zwr91ik026n8jjba6";
   };
 
-  buildInputs = [ ghc perl ncurses happy alex ];
+  postUnpack = ''
+    pushd ghc-${builtins.substring 0 7 rev}
+    patchShebangs .
+    ./boot
+    popd
+  '';
+
+  buildInputs = [ ghc perl autoconf automake happy alex ];
 
   preConfigure = ''
-    echo >mk/build.mk "DYNAMIC_BY_DEFAULT = NO"
+    echo >mk/build.mk "${buildMK}"
     sed -i -e 's|-isysroot /Developer/SDKs/MacOSX10.5.sdk||' configure
   '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
     export NIX_LDFLAGS="$NIX_LDFLAGS -rpath $out/lib/ghc-${version}"
   '';
 
   configureFlags = [
-    "--with-gcc=${stdenv.gcc}/bin/gcc"
+    "--with-gcc=${stdenv.cc}/bin/cc"
     "--with-gmp-includes=${gmp}/include" "--with-gmp-libraries=${gmp}/lib"
   ];
 
@@ -27,7 +52,7 @@ stdenv.mkDerivation rec {
 
   # required, because otherwise all symbols from HSffi.o are stripped, and
   # that in turn causes GHCi to abort
-  stripDebugFlags = [ "-S" "--keep-file-symbols" ];
+  stripDebugFlags = [ "-S" ] ++ stdenv.lib.optional (!stdenv.isDarwin) "--keep-file-symbols";
 
   meta = {
     homepage = "http://haskell.org/ghc";

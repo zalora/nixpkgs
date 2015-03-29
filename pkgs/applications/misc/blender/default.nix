@@ -3,19 +3,21 @@
 , libtiff, mesa, openal, opencolorio, openexr, openimageio, openjpeg, python
 , zlib, fftw
 , jackaudioSupport ? false, jack2
-, cudaSupport ? false, cudatoolkit6
+, cudaSupport ? false, cudatoolkit65
 , colladaSupport ? true, opencollada
 }:
 
 with lib;
 
 stdenv.mkDerivation rec {
-  name = "blender-2.72b";
+  name = "blender-2.73a";
 
   src = fetchurl {
     url = "http://download.blender.org/source/${name}.tar.gz";
-    sha256 = "0ixz8h3c08p4f84x8r85nzddwvc0h5lw1ci8gdg2x3m2mw2cfdj4";
+    sha256 = "114ipidrja6ryi6wv0w55wmh10ikazy24r8js596g7b9fpkzpymc";
   };
+
+  patches = [ ./sm52.patch ];
 
   buildInputs =
     [ SDL boost cmake ffmpeg gettext glew ilmbase libXi
@@ -23,7 +25,7 @@ stdenv.mkDerivation rec {
       opencolorio openexr openimageio /* openjpeg */ python zlib fftw
     ]
     ++ optional jackaudioSupport jack2
-    ++ optional cudaSupport cudatoolkit6
+    ++ optional cudaSupport cudatoolkit65
     ++ optional colladaSupport opencollada;
 
   postUnpack =
@@ -36,6 +38,11 @@ stdenv.mkDerivation rec {
       "-DWITH_CODEC_FFMPEG=ON"
       "-DWITH_CODEC_SNDFILE=ON"
       "-DWITH_INSTALL_PORTABLE=OFF"
+      "-DWITH_FFTW3=ON"
+      "-DWITH_SDL=ON"
+      "-DWITH_GAMEENGINE=ON"
+      "-DWITH_OPENCOLORIO=ON"
+      "-DWITH_PLAYER=ON"
       "-DPYTHON_LIBRARY=python${python.majorVersion}m"
       "-DPYTHON_LIBPATH=${python}/lib"
       "-DPYTHON_INCLUDE_DIR=${python}/include/python${python.majorVersion}m"
