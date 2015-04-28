@@ -90,7 +90,7 @@ with lib;
     default = [];
     example = [
       { urlPath = "/foo/bar.png";
-        dir = "/home/eelco/some-file.png";
+        files = "/home/eelco/some-file.png";
       }
     ];
     description = ''
