@@ -1052,6 +1052,7 @@ in
 
     systemd.services.systemd-remount-fs.restartIfChanged = false;
     systemd.services.systemd-journal-flush.restartIfChanged = false;
+    systemd.services.dbus.restartIfChanged = false;
 
   }
   (mkIf config.systemd.network.enable {
