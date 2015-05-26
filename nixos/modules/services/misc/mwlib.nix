@@ -140,20 +140,18 @@ in
             }; # nslave.http.port
 
             address = mkOption {
-              default = "0.0.0.0";
+              default = "127.0.0.1";
               type = types.str;
               description = "Specify network interface to listen on.";
             }; # nslave.http.address
 
             url = mkOption {
-              default = "auto";
+              default = "http://localhost:${toString nslave.http.port}/cache";
               type = types.str;
               description = ''
                 Specify URL for accessing generated files from cache.
                 The Collection extension of Mediawiki won't be able to
                 download files without it.
-                By default this URL is automatically calculated
-                if you use internal HTTP server locally.
                 '';
             }; # nslave.http.url
           };
@@ -238,7 +236,7 @@ in
             "${mwlib}/bin/nslave"
             "--cachedir ${nslave.cachedir}"
             "--numprocs ${toString nslave.numprocs}"
-            (optionalString (nslave.http.url != "auto") "--url ${nslave.http.url}" )
+            "--url ${nslave.http.url}"
           ] ++ (
             if nslave.http.enable then
             [
