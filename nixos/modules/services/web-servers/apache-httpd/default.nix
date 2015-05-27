@@ -22,11 +22,7 @@ let
 
 
   makeServerInfo = cfg: {
-    # Canonical name must not include a trailing slash.
-    canonicalName =
-      (if cfg.enableSSL then "https" else "http") + "://" +
-      cfg.hostName +
-      (if getPort cfg != (if cfg.enableSSL then 443 else 80) then ":${toString (getPort cfg)}" else "");
+    canonicalName = cfg.hostName ;
 
     # Admin address: inherit from the main server if not specified for
     # a virtual host.
