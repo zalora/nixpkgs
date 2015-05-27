@@ -10,7 +10,7 @@
 
 let
 
-  version = "6.9.1-0";
+  version = "6.9.1-3";
 
   arch =
     if stdenv.system == "i686-linux" then "i686"
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "mirror://imagemagick/releases/ImageMagick-${version}.tar.xz";
-    sha256 = "03lvj6rxv16xk0dpsbzvm2gq5bggkwff9wqbpkq0znihzijpax1j";
+    sha256 = "5fd180603e60c624c05c644a8340f4f4e92c19dc3c41d374d38f76c69cd48ba3";
   };
 
   enableParallelBuilding = true;
