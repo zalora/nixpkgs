@@ -92,6 +92,8 @@ let
 
     skins = config.skins;
 
+    patches = [ ./mediawiki-1.23.9-SERVER_PORT.patch ];
+
     buildPhase =
       ''
         for skin in $skins; do
