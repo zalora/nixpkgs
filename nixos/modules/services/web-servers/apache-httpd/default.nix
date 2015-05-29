@@ -321,7 +321,7 @@ let
     ${let
         ports = map getPort allHosts;
         uniquePorts = uniqList {inputList = ports;};
-      in concatMapStrings (port: "Listen ${toString port}\n") uniquePorts
+      in concatMapStrings (port: "Listen 127.0.0.1:${toString port}\n") uniquePorts
     }
 
     User ${mainCfg.user}
