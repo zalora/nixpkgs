@@ -224,7 +224,7 @@ in
         chmod -Rc u=rwX,go= '${nslave.cachedir}'
       '';
 
-      path = with pkgs; [ imagemagick ];
+      path = with pkgs; [ imagemagick pdftk ];
       environment = {
         PYTHONPATH = concatMapStringsSep ":"
           (m: "${pypkgs.${m}}/lib/${python.libPrefix}/site-packages")
