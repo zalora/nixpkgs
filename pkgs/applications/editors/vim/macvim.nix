@@ -1,15 +1,18 @@
-{ stdenv, fetchurl, ncurses, gettext,
-  pkgconfig, cscope, python, ruby, tcl, perl, luajit
+{ stdenv, fetchFromGitHub, ncurses, gettext
+, pkgconfig, cscope, python, ruby, tcl, perl, luajit
+, darwin
 }:
 
 stdenv.mkDerivation rec {
   name = "macvim-${version}";
 
-  version = "7.4.479";
+  version = "7.4.909";
 
-  src = fetchurl {
-    url = "https://github.com/genoma/macvim/archive/g-snapshot-21.tar.gz";
-    sha256 = "1s86dpb8bcxh309gikiz8gm9ygv3d2jy6i4qlnxarbvcdk65fzv4";
+  src = fetchFromGitHub {
+    owner = "macvim-dev";
+    repo = "macvim";
+    rev = "75aa7774645adb586ab9010803773bd80e659254";
+    sha256 = "0k04jimbms6zffh8i8fjm2y51q01m5kga2n4djipd3pxij1qy89y";
   };
 
   enableParallelBuilding = true;
@@ -54,16 +57,30 @@ stdenv.mkDerivation rec {
 
   makeFlags = ''PREFIX=$(out) CPPFLAGS="-Wno-error"'';
 
+  # This is unfortunate, but we need to use the same compiler as XCode,
+  # but XCode doesn't provide a way to configure the compiler.
+  #
+  # If you're willing to modify the system files, you can do this:
+  #   http://hamelot.co.uk/programming/add-gcc-compiler-to-xcode-6/
+  #
+  # But we don't have that option.
   preConfigure = ''
+    CC=/usr/bin/clang
+
     DEV_DIR=$(/usr/bin/xcode-select -print-path)/Platforms/MacOSX.platform/Developer
     configureFlagsArray+=(
       "--with-developer-dir=$DEV_DIR"
     )
   '';
 
+  postConfigure = ''
+    substituteInPlace src/auto/config.mk --replace "PERL_CFLAGS	=" "PERL_CFLAGS	= -I${darwin.libutil}/include"
+  '';
+
   postInstall = ''
     mkdir -p $out/Applications
     cp -r src/MacVim/build/Release/MacVim.app $out/Applications
+    rm -rf $out/MacVim.app
 
     rm $out/bin/{Vimdiff,Vimtutor,Vim,ex,rVim,rview,view}
 
@@ -87,6 +104,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "Vim - the text editor - for Mac OS X";
     homepage    = https://github.com/b4winckler/macvim;
+    license = licenses.vim;
     maintainers = with maintainers; [ cstrahan ];
     platforms   = platforms.darwin;
   };

@@ -1,0 +1,14 @@
+--- a/hotspot/make/linux/Makefile	2016-05-27 20:28:20.000000000 +0800
++++ b/hotspot/make/linux/Makefile	2016-05-27 20:28:58.000000000 +0800
+@@ -236,9 +236,8 @@
+ EMPTY_IF_NOT_SUPPORTED = $(filter $(SUPPORTED_OS_VERSION),$(OS_VERSION))
+ 
+ check_os_version:
+-ifeq ($(DISABLE_HOTSPOT_OS_VERSION_CHECK)$(EMPTY_IF_NOT_SUPPORTED),)
+-	$(QUIETLY) >&2 echo "*** This OS is not supported:" `uname -a`; exit 1;
+-endif
++	true
++
+ 
+ # jvmti.make requires XSLT (J2SE 1.4.x or newer):
+ XSLT_CHECK	= $(REMOTE) $(RUN.JAVAP) javax.xml.transform.TransformerFactory

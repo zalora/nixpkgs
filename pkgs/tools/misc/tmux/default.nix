@@ -1,27 +1,43 @@
-{stdenv, fetchurl, ncurses, libevent, pkgconfig}:
+{ stdenv, fetchFromGitHub, autoreconfHook, ncurses, libevent, pkgconfig }:
 
-stdenv.mkDerivation rec {
-  pname = "tmux";
-  version = "1.9a";
-  name = "${pname}-${version}";
+let
 
-  src = fetchurl {
-    url = "mirror://sourceforge/${pname}/${name}.tar.gz";
-    sha256 = "1x9k4wfd4l5jg6fh7xkr3yyilizha6ka8m5b1nr0kw8wj0mv5qy5";
+  bashCompletion = fetchFromGitHub {
+    owner = "przepompownia";
+    repo = "tmux-bash-completion";
+    rev = "678a27616b70c649c6701cae9cd8c92b58cc051b";
+    sha256 = "1d2myrh4xiay9brsxafb02pi922760sdkyyy5xjm4sfh4iimc4zf";
   };
 
-  nativeBuildInputs = [ pkgconfig ];
+in
+
+stdenv.mkDerivation rec {
+  name = "tmux-${version}";
+  version = "2.2";
+
+  src = fetchFromGitHub {
+    owner = "tmux";
+    repo = "tmux";
+    rev = version;
+    sha256 = "04k9yxjp357sdw6365z6qx87vmwygl3v3wpvd78pp63ky5hzbbay";
+  };
+
+  nativeBuildInputs = [ pkgconfig autoreconfHook ];
 
   buildInputs = [ ncurses libevent ];
 
-  postInstall =
-    ''
-      mkdir -p $out/etc/bash_completion.d
-      cp -v examples/bash_completion_tmux.sh $out/etc/bash_completion.d/tmux
-    '';
+  configureFlags = [
+    "--sysconfdir=/etc"
+    "--localstatedir=/var"
+  ];
+
+  postInstall = ''
+    mkdir -p $out/etc/bash_completion.d
+    cp -v ${bashCompletion}/completions/tmux $out/etc/bash_completion.d/tmux
+  '';
 
   meta = {
-    homepage = http://tmux.sourceforge.net/;
+    homepage = http://tmux.github.io/;
     description = "Terminal multiplexer";
 
     longDescription =
@@ -41,6 +57,6 @@ stdenv.mkDerivation rec {
     license = stdenv.lib.licenses.bsd3;
 
     platforms = stdenv.lib.platforms.unix;
-    maintainers = with stdenv.lib.maintainers; [ shlevy thammers ];
+    maintainers = with stdenv.lib.maintainers; [ thammers fpletz ];
   };
 }

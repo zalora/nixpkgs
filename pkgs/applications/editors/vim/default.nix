@@ -1,14 +1,21 @@
-{ stdenv, fetchhg, ncurses, gettext, pkgconfig }:
+{ stdenv, fetchFromGitHub, fetchurl, ncurses, gettext, pkgconfig
+# default vimrc
+, vimrc ? fetchurl {
+    name = "default-vimrc";
+    url = https://projects.archlinux.org/svntogit/packages.git/plain/trunk/archlinux.vim?h=packages/vim?id=68f6d131750aa778807119e03eed70286a17b1cb;
+    sha256 = "18ifhv5q9prd175q3vxbqf6qyvkk6bc7d2lhqdk0q78i68kv9y0c";
+  }
+}:
 
 stdenv.mkDerivation rec {
   name = "vim-${version}";
+  version = "7.4.1585";
 
-  version = "7.4.683";
-
-  src = fetchhg {
-    url = "https://code.google.com/p/vim/";
-    rev = "v7-4-663";
-    sha256 = "1z0qarf6a2smab28g9dnxklhfayn85wx48bnddmyhb9kqzjgqgjc";
+  src = fetchFromGitHub {
+    owner = "vim";
+    repo = "vim";
+    rev = "v${version}";
+    sha256 = "1kjdwpka269i4cyl0rmnmzg23dl26g65k26h32w8ayzfm3kbj123";
   };
 
   enableParallelBuilding = true;
@@ -21,7 +28,11 @@ stdenv.mkDerivation rec {
     "--enable-nls"
   ];
 
-  postInstall = "ln -s $out/bin/vim $out/bin/vi";
+  postInstall = ''
+    ln -s $out/bin/vim $out/bin/vi
+    mkdir -p $out/share/vim
+    cp "${vimrc}" $out/share/vim/vimrc
+  '';
 
   crossAttrs = {
     configureFlags = [
@@ -39,6 +50,8 @@ stdenv.mkDerivation rec {
     ];
   };
 
+  __impureHostDeps = [ "/dev/ptmx" ];
+
   # To fix the trouble in vim73, that it cannot cross-build with this patch
   # to bypass a configure script check that cannot be done cross-building.
   # http://groups.google.com/group/vim_dev/browse_thread/thread/66c02efd1523554b?pli=1
@@ -49,6 +62,7 @@ stdenv.mkDerivation rec {
   meta = with stdenv.lib; {
     description = "The most popular clone of the VI editor";
     homepage    = http://www.vim.org;
+    license = licenses.vim;
     maintainers = with maintainers; [ lovek323 ];
     platforms   = platforms.unix;
   };

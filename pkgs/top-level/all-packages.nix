@@ -5986,10 +5986,7 @@ let
   kerberos = if stdenv.isDarwin then null else heimdal;
 
   heimdal = callPackage ../development/libraries/kerberos/heimdal.nix {
-    openldap = openldap.override {
-      cyrus_sasl = cyrus_sasl.override { kerberos = null; };
-    };
-    cyrus_sasl = cyrus_sasl.override { kerberos = null; };
+    type = "lib";
   };
 
   harfbuzz = callPackage ../development/libraries/harfbuzz { };

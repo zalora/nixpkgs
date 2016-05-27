@@ -65,6 +65,7 @@ let
       ./paxctl.patch
       ./read-truststore-from-env.patch
       ./currency-date-range.patch
+      ./check_os_version.patch
     ];
 
     NIX_NO_SELF_RPATH = true;
@@ -84,6 +85,7 @@ let
       "STATIC_CXX=false"
       "UNLIMITED_CRYPTO=1"
       "FULL_DEBUG_SYMBOLS=0"
+      "DISABLE_HOTSPOT_OS_VERSION_CHECK=ok"
     ];
 
     configurePhase = "true";

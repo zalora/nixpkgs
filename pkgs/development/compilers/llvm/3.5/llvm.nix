@@ -7,7 +7,6 @@
 , libffi
 , binutils
 , libxml2
-, valgrind
 , ncurses
 , version
 , zlib
@@ -27,7 +26,7 @@ in stdenv.mkDerivation rec {
     mv compiler-rt-* $sourceRoot/projects/compiler-rt
   '';
 
-  buildInputs = [ perl groff cmake libxml2 python libffi ] ++ stdenv.lib.optional stdenv.isLinux valgrind;
+  buildInputs = [ perl groff cmake libxml2 python libffi ];
 
   propagatedBuildInputs = [ ncurses zlib ];
 
